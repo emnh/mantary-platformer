@@ -11,13 +11,14 @@ import platformImg4Src from './images/platform4.png';
 import locations from './locations.json';
 
 let worldPosition = { x: 0, y: 0 };
+let velocityY = 0;
 let jsonTextarea;
 
 const images = {
   protagonist: {
     name: 'protagonist',
     src: protagonistImgSrc,
-    width: 100,
+    height: 150,
     elements: [], // Change from element to elements
     zindex: 1,
   },
@@ -60,6 +61,48 @@ const images = {
 const rndPlatforms = [images['platform2'], images['platform3'], images['platform4']];
 const platforms = [];
 
+const worldToProtagonist = function(worldX, worldY) {
+  const protagonistDiv = images.protagonist.elements[0];
+  const imageTags = protagonistDiv.getElementsByTagName('img');
+  const image = imageTags[0];
+
+  // Get the width and height of the image
+  const width = image.width;
+  const height = image.height;
+
+  // Get the width and height of the viewport
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Calculate the center coordinates
+  const centerX = (viewportWidth - width) / 2 - worldX;
+  //const centerY = (viewportHeight - height) / 2 - worldPosition.y;
+  const centerY = worldY;
+
+  return { protagonistDiv, x: centerX, y: centerY, width, height };
+};
+
+const protagonistToWorld = function(protagonistX, protagonistY) {
+  const protagonistDiv = images.protagonist.elements[0];
+  const imageTags = protagonistDiv.getElementsByTagName('img');
+  const image = imageTags[0];
+
+  // Get the width and height of the image
+  const width = image.width;
+  const height = image.height;
+
+  // Get the width and height of the viewport
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Calculate the center coordinates
+  const centerX = protagonistX - (viewportWidth - width) / 2;
+  //const centerY = (viewportHeight - height) / 2 - worldPosition.y;
+  const centerY = protagonistY;
+
+  return { protagonistDiv, x: centerX, y: centerY, width, height };
+};
+
 const importJSON = function(json) {
   const imageData = json;
 
@@ -67,7 +110,7 @@ const importJSON = function(json) {
     const data = imageData[i];
     const imageInfo = images[data.name];
 
-    if (imageInfo && imageInfo.elements) {
+    if (imageInfo && imageInfo.elements[parseInt(data.index)]) {
       const imageDiv = imageInfo.elements[parseInt(data.index)];
       const x = parseFloat(data.x) || 0;
       const y = parseFloat(data.y) || 0;
@@ -112,7 +155,6 @@ const addImage = function(imageName, x, y) {
 
   const image = new Image();
   image.src = imageInfo.src;
-  image.width = imageInfo.width;
 
   const imageDiv = document.createElement('div');
   imageDiv.style.position = 'absolute'; // Set position to absolute
@@ -128,6 +170,12 @@ const addImage = function(imageName, x, y) {
   if (imageInfo.zindex) {
     imageDiv.style.zIndex = imageInfo.zindex;
   }
+  if (imageInfo.width) {
+    image.width = imageInfo.width;
+  }
+  if (imageInfo.height) {
+    image.height = imageInfo.height;
+  }
 
   interact(imageDiv).draggable({
     onmove: function (event) {
@@ -139,40 +187,24 @@ const addImage = function(imageName, x, y) {
       exportJSON();
     }
   });
+
+  return imageDiv;
 };
 
 
 const centerProtagonist = function() {
-  // const protagonistDiv = document.createElement('div');
-  // protagonistDiv.appendChild(images.protagonist.element);
-  // document.body.appendChild(protagonistDiv);
-  const protagonistDiv = images.protagonist.elements[0];
-  const imageTags = protagonistDiv.getElementsByTagName('img');
-  const image = imageTags[0];
-
-  // Get the width and height of the image
-  const width = image.width;
-  const height = image.height;
-
-  // Get the width and height of the viewport
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  // Calculate the center coordinates
-  const centerX = (viewportWidth - width) / 2 - worldPosition.x;
-  const centerY = (viewportHeight - height) / 2 - worldPosition.y;
+  const {protagonistDiv, x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
 
   // Set the position of the protagonist div to the center
   protagonistDiv.style.position = 'absolute';
-  protagonistDiv.style.left = `${centerX}px`;
-  protagonistDiv.style.top = `${centerY}px`;
+  protagonistDiv.style.left = `${x}px`;
+  protagonistDiv.style.top = `${y}px`;
 };
 
 const addMovementCode = function() {
   let keysPressed = {};
   let moveDistance = 0.2;
-  let lastMoved = false;
-  let lastOnGround = false;
+  let lastState = 'idle';
   let lastTimestamp = performance.now();
   let startJump = 0;
   const protagonistImage = images.protagonist.elements[0].getElementsByTagName('img')[0];
@@ -186,18 +218,62 @@ const addMovementCode = function() {
     delete keysPressed[event.key];
   });
 
+  const boundsCheck = function(velocityY, jumping) {
+    let onGround = false;
+    for (let i = 0; i < platforms.length; i++) {
+      const platform = platforms[i];
+      const platformRect = platform.getElementsByTagName('img')[0].getBoundingClientRect();
+      const protagonistRect = protagonistImage.getBoundingClientRect();
+      // if (protagonistRect.bottom <= platformRect.bottom && protagonistRect.bottom >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
+      // if (worldPosition.y <= platformRect.bottom && worldPosition.y >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
+      const insidePlatform = 10;
+      const platformThreshold = platformRect.top + 100;
+      const x = protagonistRect.left;
+      const y1 = protagonistRect.bottom;
+      const y2 = protagonistRect.bottom + velocityY;
+      const width = protagonistRect.width;
+      const height = protagonistRect.height;
+      const check1 =
+        y1 >= platformThreshold &&
+        y1 <= platformThreshold + insidePlatform;
+      const check2 =
+        y2 >= platformThreshold &&
+        y2 <= platformThreshold + insidePlatform;
+      if ((check1 || check2) && !jumping &&
+          x + width >= platformRect.left &&
+          x <= platformRect.right) {
+        // worldPosition.y = (platformRect.top + protagonistRect.height);
+        const world = protagonistToWorld(x, platformThreshold - height);
+        worldPosition.y = world.y;
+        onGround = true;
+        break;
+      }
+    }
+    
+    const threshold = window.innerHeight - protagonistImage.height;
+    if (worldPosition.y + velocityY >= threshold) {
+      worldPosition.y = threshold;
+      onGround = true;
+    }
+
+    return onGround;
+  };
+
   function updateWorldPosition() {
     const timestamp = performance.now();
     const elapsed = timestamp - lastTimestamp;
     lastTimestamp = timestamp;
     let moved = false;
-    let velocityY = 0;
+    const jumping = (performance.now() - startJump) < 200;
+    // const {x, y, width, height} = worldToProtagonist(worldPosition.x, worldPosition.y);
   
     // Check if the character is on the ground
-    const onGround = worldPosition.y <= 0;
-    if (worldPosition < 0) {
-      worldPosition = 0;
-    }
+    // const onGround = worldPosition.y <= 0;
+    // if (worldPosition < 0) {
+    //   worldPosition = 0;
+    // }
+    
+    let onGround = boundsCheck(velocityY, jumping);
   
     if ('a' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
@@ -225,35 +301,35 @@ const addMovementCode = function() {
     }
   
     // Apply gravity to the character when not on the ground
-    if (startJump > 0 && (performance.now() - startJump) < 200) {
-      velocityY -= 0.1 * elapsed;
-      worldPosition.y -= velocityY * elapsed;
+    if (startJump > 0 && jumping) {
+      velocityY -= 0.008 * elapsed;
+      worldPosition.y += velocityY * elapsed;
       //startJump = performance.now();
       // console.log(startJump, performance.now() - startJump);
     } else if (!onGround) {
-      velocityY += 0.05 * elapsed;
-      worldPosition.y -= velocityY * elapsed;
+      velocityY += 0.01 * elapsed;
+      worldPosition.y += velocityY * elapsed;
     } else {
       velocityY = 0;
     }
+
+    onGround = boundsCheck(velocityY, jumping);
   
     // Change the character image depending on its state
     if (!onGround) {
-      moved = true;
-      if (!lastOnGround) {
+      if (lastState !== 'jump') {
         protagonistImage.src = protagonistJumpImgSrc;
-        lastOnGround = true;
+        lastState = 'jump';
       }
     } else if (moved) {
-      if (!lastMoved || lastOnGround) {
+      if (lastState !== 'walk') {
         protagonistImage.src = protagonistWalkImgSrc;
-        lastOnGround = false;
+        lastState = 'walk';
       }
-    } else {
+    } else if (lastState !== 'idle') {
       protagonistImage.src = protagonistImgSrc;
-      lastOnGround = false;
+      lastState = 'idle';
     }
-    lastMoved = moved;
   
     // Update the position of the character
     // document.body.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
@@ -305,7 +381,8 @@ const addPlatforms = function() {
     }
 
     // Add the platform to the world
-    addImage(platformInfo.name, platformLeft, platformTop);
+    const platform = addImage(platformInfo.name, platformLeft, platformTop);
+    platforms.push(platform);
   }
 }
 
@@ -333,4 +410,4 @@ const docReady = function(fn) {
 
 docReady(main);
 
-// Fix the code such that element is named elements and is an array of elements.
+// Fix the code so that the protagonist can jump on the platforms.

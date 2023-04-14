@@ -8,7 +8,6 @@ import platformImgSrc from './images/platform1.png';
 import locations from './locations.json';
 
 let worldPosition = { x: 0, y: 0 };
-let lastMoved = false;
 let jsonTextarea;
 
 const images = {
@@ -138,12 +137,15 @@ const centerProtagonist = function() {
 const addMovementCode = function() {
   let keysPressed = {};
   let moveDistance = 0.1;
+  let lastMoved = false;
+  let lastOnGround = false;
   let lastTimestamp = performance.now();
+  let startJump = 0;
   const image = images.protagonist.element.getElementsByTagName('img')[0];
 
   document.addEventListener('keydown', function(event) {
     keysPressed[event.key] = true;
-    console.log(event.key);
+    // console.log(event.key);
   });
 
   document.addEventListener('keyup', function(event) {
@@ -155,52 +157,79 @@ const addMovementCode = function() {
     const elapsed = timestamp - lastTimestamp;
     lastTimestamp = timestamp;
     let moved = false;
-
+    let velocityY = 0;
+  
+    // Check if the character is on the ground
+    const onGround = worldPosition.y <= 0;
+    if (worldPosition < 0) {
+      worldPosition = 0;
+    }
+  
     if ('a' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
       moved = true;
       image.classList.add('flip-horizontal');
     }
-
+  
     if ('d' in keysPressed) {
       worldPosition.x -= moveDistance * elapsed;
       moved = true;
       image.classList.remove('flip-horizontal');
     }
-
-    if ('w' in keysPressed) {
-      worldPosition.y += moveDistance * elapsed;
+  
+    if ('w' in keysPressed && onGround) {
+      // Apply an upward force to the character when jumping
+      // worldPosition.y += 1;
+      // velocityY = -20;
       moved = true;
+      startJump = performance.now();
     }
-
+  
     if ('s' in keysPressed) {
-      worldPosition.y -= moveDistance * elapsed;
-      moved = true;
+      // worldPosition.y -= moveDistance * elapsed;
+      // moved = true;
     }
-
-    if (' ' in keysPressed) {
-      // Set the image to jumping if it's not already
+  
+    // Apply gravity to the character when not on the ground
+    if (startJump > 0 && (performance.now() - startJump) < 200) {
+      velocityY -= 0.1 * elapsed;
+      worldPosition.y -= velocityY * elapsed;
+      //startJump = performance.now();
+      console.log(startJump, performance.now() - startJump);
+    } else if (!onGround) {
+      velocityY += 0.05 * elapsed;
+      worldPosition.y -= velocityY * elapsed;
+    } else {
+      velocityY = 0;
+    }
+  
+    // Change the character image depending on its state
+    if (!onGround) {
       moved = true;
-      if (!lastMoved) {
+      if (!lastOnGround) {
         image.src = protagonistJumpImgSrc;
+        lastOnGround = true;
       }
     } else if (moved) {
-      // Set the image to walking if it's not already
       if (!lastMoved) {
         image.src = protagonistWalkImgSrc;
+        lastOnGround = false;
       }
     } else {
-      // Set the image to standing
       image.src = protagonistImgSrc;
+      lastOnGround = false;
     }
     lastMoved = moved;
-
-    document.body.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
-
+  
+    // Update the position of the character
+    // document.body.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
+    document.body.style.transform = `translate(${worldPosition.x}px, ${0}px)`;
     centerProtagonist();
-
+    // console.log(worldPosition);
+  
     requestAnimationFrame(updateWorldPosition);
   }
+  
 
   requestAnimationFrame(updateWorldPosition);
 };
@@ -230,3 +259,4 @@ const docReady = function(fn) {
 
 docReady(main);
 
+// Update this code to add jumping physics to the character.

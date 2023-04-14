@@ -2,7 +2,19 @@
     {
       "name": "protagonist",
       "src": "/images/protagonist.png",
-      "x": 714,
-      "y": 424.390625
+      "x": 920,
+      "y": 575.5
+    },
+    {
+      "name": "redtree",
+      "src": "/images/redtree.png",
+      "x": 576,
+      "y": 276
+    },
+    {
+      "name": "platform1",
+      "src": "/images/platform1.png",
+      "x": 0,
+      "y": 0
     }
   ]

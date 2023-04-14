@@ -2,6 +2,7 @@ import './style.css';
 import interact from 'interact.js';
 import protagonistImgSrc from './images/protagonist.png';
 import protagonistWalkImgSrc from './images/walk.gif';
+import protagonistJumpImgSrc from './images/jump.gif';
 import redTreeImgSrc from './images/redtree.png';
 import platformImgSrc from './images/platform1.png';
 import locations from './locations.json';
@@ -142,6 +143,7 @@ const addMovementCode = function() {
 
   document.addEventListener('keydown', function(event) {
     keysPressed[event.key] = true;
+    console.log(event.key);
   });
 
   document.addEventListener('keyup', function(event) {
@@ -176,7 +178,13 @@ const addMovementCode = function() {
       moved = true;
     }
 
-    if (moved) {
+    if (' ' in keysPressed) {
+      // Set the image to jumping if it's not already
+      moved = true;
+      if (!lastMoved) {
+        image.src = protagonistJumpImgSrc;
+      }
+    } else if (moved) {
       // Set the image to walking if it's not already
       if (!lastMoved) {
         image.src = protagonistWalkImgSrc;
@@ -221,3 +229,4 @@ const docReady = function(fn) {
 };
 
 docReady(main);
+

@@ -10,6 +10,7 @@ import platformImg3Src from './images/platform3.png';
 import platformImg4Src from './images/platform4.png';
 import locations from './locations.json';
 
+const appBody = document.getElementById('app');
 let worldPosition = { x: 0, y: 0 };
 let velocityY = 0;
 let jsonTextarea;
@@ -20,46 +21,48 @@ const images = {
     src: protagonistImgSrc,
     height: 150,
     elements: [], // Change from element to elements
-    zindex: 1,
+    zindex: 2,
   },
   redtree: {
     name: 'redtree',
     src: redTreeImgSrc,
     width: 200,
-    elements: [] // Change from element to elements
+    elements: [],
+    zIndex: -2 // Change from element to elements
   },
   platform1: {
     name: 'platform1',
     src: platformImg1Src,
     width: 768,
     elements: [], // Change from element to elements
-    zindex: -1
+    zindex: 1
   },
   platform2: {
     name: 'platform2',
     src: platformImg2Src,
     width: 256,
     elements: [], // Change from element to elements
-    zindex: -1
+    zindex: 1
   },
   platform3: {
     name: 'platform3',
     src: platformImg3Src,
     width: 256,
     elements: [], // Change from element to elements
-    zindex: -1
+    zindex: 1
   },
   platform4: {
     name: 'platform4',
     src: platformImg4Src,
     width: 256,
     elements: [], // Change from element to elements
-    zindex: -1
+    zindex: 1
   } 
 };
 
 const rndPlatforms = [images['platform2'], images['platform3'], images['platform4']];
 const platforms = [];
+const forest = [];
 
 const worldToProtagonist = function(worldX, worldY) {
   const protagonistDiv = images.protagonist.elements[0];
@@ -126,7 +129,7 @@ const exportJSON = function() {
     jsonTextarea = document.createElement('textarea');
     jsonTextarea.style.maxHeight = '800px'; // Set a fixed maximum height
     jsonTextarea.style.overflowY = 'scroll'; // Display a scrollbar when content overflows
-    document.body.appendChild(jsonTextarea);
+    appBody.appendChild(jsonTextarea);
   }
 
   const imageData = [];
@@ -150,7 +153,7 @@ const exportJSON = function() {
   jsonTextarea.style.width = 400 + 'px';
 };
 
-const addImage = function(imageName, x, y) {
+const addImage = function(imageName, x, y, draggable = true, container = appBody) {
   const imageInfo = images[imageName];
 
   const image = new Image();
@@ -161,7 +164,7 @@ const addImage = function(imageName, x, y) {
   imageDiv.style.left = x + 'px'; // Initialize left position to 0
   imageDiv.style.top = y + 'px'; // Initialize top position to 0
   imageDiv.appendChild(image);
-  document.body.appendChild(imageDiv);
+  container.appendChild(imageDiv);
 
   // Add the created image element to the elements array
   imageInfo.elements.push(imageDiv);
@@ -169,6 +172,7 @@ const addImage = function(imageName, x, y) {
   // Set the z-index of the image if it exists
   if (imageInfo.zindex) {
     imageDiv.style.zIndex = imageInfo.zindex;
+    image.style.zIndex = imageInfo.zindex;
   }
   if (imageInfo.width) {
     image.width = imageInfo.width;
@@ -177,20 +181,53 @@ const addImage = function(imageName, x, y) {
     image.height = imageInfo.height;
   }
 
-  interact(imageDiv).draggable({
-    onmove: function (event) {
-      const target = event.target;
-      const x = (parseFloat(target.style.left) || 0) + event.dx;
-      const y = (parseFloat(target.style.top) || 0) + event.dy;
-      target.style.left = `${x}px`; // Set left position
-      target.style.top = `${y}px`; // Set top position
-      exportJSON();
-    }
-  });
+  if (draggable) {
+    interact(imageDiv).draggable({
+      onmove: function (event) {
+        const target = event.target;
+        const x = (parseFloat(target.style.left) || 0) + event.dx;
+        const y = (parseFloat(target.style.top) || 0) + event.dy;
+        target.style.left = `${x}px`; // Set left position
+        target.style.top = `${y}px`; // Set top position
+        // exportJSON();
+      }
+    });
+  } else {
+
+  }
 
   return imageDiv;
 };
 
+
+let ix = 0;
+let lastIx = 0;
+const redrawForest = function(cx, cy) {
+  const wh = window.innerWidth;
+  ix = Math.round(cx * 2 / wh);
+  if (ix === lastIx) {
+    return;
+  }
+  lastIx = ix;
+  // console.log("Redraw forest");
+  // For each tree in the forest
+  for (let i = 0; i < forest.length; i++) {
+    const tree = forest[i];
+    // const x = tree.getBoundingClientRect().x;
+    const x = parseInt(tree.style.left);
+    let nx = x + cx;
+    if (nx < -wh) {
+      nx += 3 * wh;
+    } else if (nx > 2 * wh) {
+      nx -= 3 * wh;
+    }
+    tree.style.left = (nx - cx) + 'px';
+    // if (i == 0) {
+    //   console.log(x, nx, wh, cx);
+    // }
+    // break;
+  }
+};
 
 const centerProtagonist = function() {
   const {protagonistDiv, x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
@@ -199,11 +236,13 @@ const centerProtagonist = function() {
   protagonistDiv.style.position = 'absolute';
   protagonistDiv.style.left = `${x}px`;
   protagonistDiv.style.top = `${y}px`;
+
+  redrawForest(worldPosition.x, worldPosition.y);
 };
 
 const addMovementCode = function() {
   let keysPressed = {};
-  let moveDistance = 0.2;
+  let moveDistance = 0.4;
   let lastState = 'idle';
   let lastTimestamp = performance.now();
   let startJump = 0;
@@ -275,19 +314,19 @@ const addMovementCode = function() {
     
     let onGround = boundsCheck(velocityY, jumping);
   
-    if ('a' in keysPressed) {
+    if ('a' in keysPressed || 'A' in keysPressed || 'ArrowLeft' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
       moved = true;
       protagonistImage.classList.add('flip-horizontal');
     }
   
-    if ('d' in keysPressed) {
+    if ('d' in keysPressed || 'D' in keysPressed || 'ArrowRight' in keysPressed) {
       worldPosition.x -= moveDistance * elapsed;
       moved = true;
       protagonistImage.classList.remove('flip-horizontal');
     }
   
-    if ('w' in keysPressed && onGround) {
+    if (('w' in keysPressed || 'W' in keysPressed || 'ArrowUp' in keysPressed) && onGround) {
       // Apply an upward force to the character when jumping
       // worldPosition.y += 1;
       // velocityY = -20;
@@ -332,8 +371,8 @@ const addMovementCode = function() {
     }
   
     // Update the position of the character
-    // document.body.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
-    document.body.style.transform = `translate(${worldPosition.x}px, ${0}px)`;
+    // appBody.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
+    appBody.style.transform = `translate(${worldPosition.x}px, ${0}px)`;
     centerProtagonist();
     // console.log(worldPosition);
   
@@ -386,16 +425,80 @@ const addPlatforms = function() {
   }
 }
 
+const addForest = function() {
+  // Add forest div
+  const forestDiv = document.createElement('div');
+  forestDiv.id = 'forest';
+  // forest.style.zIndex = -2;
+  appBody.appendChild(forestDiv);
+  forestDiv.style.opacity = 0.25;
+  // forestDiv.style.position = 'absolute';
+
+  for (let x = -window.innerWidth; x < 2 * window.innerWidth; x += 100) {
+    for (let y1 = 0.5 * window.innerHeight; y1 < window.innerHeight - 100; y1 += 200) {
+      const y = y1 + 200 * Math.random();
+      const x2 = x + 100 * Math.random();
+      const div = addImage('redtree', x2, y, false, forestDiv);
+      const img = div.getElementsByTagName('img')[0];
+      // div.style.position = 'relative';
+      img.style.pointerEvents = 'none';
+      img.style.filter = `hue-rotate(${360 * Math.random()}deg)`;
+      img.style.width = Math.random() * 200 + 100 + 'px';
+      const pct = y / window.innerHeight;
+      // img.style.width = 200 * pct + 'px';
+      div.style.top = '';
+      div.style.bottom = -y + 'px';
+      // img.style.zIndex = y;
+      // img.style.opacity = pct;
+      forest.push(div);
+    }
+    // const before = document.createElement('img');
+    // div.prepend(before);
+    // before.style.width = '100%';
+    // before.style.height = '100%';
+    // before.style.position = 'absolute';
+    // before.style.left = 0;
+    // before.style.top = 0;
+    // before.style.opacity = 0.5;
+    // // Set random color
+    // before.style.backgroundColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`;
+    // // before.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+    // before.src = redTreeImgMaskSrc;
+    // before.style.mixBlendMode = 'multiply';
+
+
+    // div.zIndex = -2;
+    // img.style.zIndex = -2;
+  }
+};
+
 const main = function() {
+  // Add background image
+
+  // const img = document.createElement('img');
+  // img.id = 'background';
+  // img.width = window.innerWidth;
+  // img.height = window.innerHeight;
+  // img.src = backgroundImgSrc;
+  // img.style.zIndex = -2;
+  // img.style.position = 'absolute';
+  // img.style.left = 0;
+  // img.style.top = 0;
+  // appBody.appendChild(img);
+
   for (const imageName in images) {
     if (images.hasOwnProperty(imageName) && imageName ==="protagonist") {
       addImage(imageName, 0, 0);
     }
   }
+
+  addPlatforms();
+
+  addForest();
   // importJSON(locations);
   addMovementCode();
-  addPlatforms();
-  exportJSON();
+  
+  // exportJSON();
 };
 
 const docReady = function(fn) {
@@ -409,5 +512,3 @@ const docReady = function(fn) {
 };
 
 docReady(main);
-
-// Fix the code so that the protagonist can jump on the platforms.

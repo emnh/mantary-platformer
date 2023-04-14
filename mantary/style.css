@@ -26,11 +26,23 @@ a:hover {
 body {
   margin: 0;
   padding: 0;
-  display: flex;
+  /* display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100vh; */
   overflow: hidden;
+  -webkit-user-select: none; /* Chrome, Safari, Opera */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+  width: 100vw;
+  height: 100vh;
+  /* background-image: url('./background.png');
+  background-size: 100vh;
+  background-repeat: repeat-x; */
+  /* background-size: cover; */
+  background: linear-gradient(to bottom, #ffffff, #a0a0ff);
+  background-attachment: fixed;
 }
 
 h1 {

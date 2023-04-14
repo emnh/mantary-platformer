@@ -1,20 +1,79 @@
 [
-    {
-      "name": "protagonist",
-      "src": "/images/protagonist.png",
-      "x": 920,
-      "y": 575.5
-    },
-    {
-      "name": "redtree",
-      "src": "/images/redtree.png",
-      "x": 576,
-      "y": 276
-    },
-    {
-      "name": "platform1",
-      "src": "/images/platform1.png",
-      "x": 0,
-      "y": 0
-    }
-  ]
+  {
+    "name": "protagonist",
+    "index": 0,
+    "src": "/images/protagonist.png",
+    "x": 917.9874877929688,
+    "y": 573.59375
+  },
+  {
+    "name": "platform2",
+    "index": 0,
+    "src": "/images/platform2.png",
+    "x": 1359.800048828125,
+    "y": 715
+  },
+  {
+    "name": "platform2",
+    "index": 1,
+    "src": "/images/platform2.png",
+    "x": 1114.800048828125,
+    "y": 776
+  },
+  {
+    "name": "platform2",
+    "index": 2,
+    "src": "/images/platform2.png",
+    "x": 546.7999877929688,
+    "y": 764
+  },
+  {
+    "name": "platform3",
+    "index": 0,
+    "src": "/images/platform3.png",
+    "x": 74.80000305175781,
+    "y": 406
+  },
+  {
+    "name": "platform3",
+    "index": 1,
+    "src": "/images/platform3.png",
+    "x": 1577.800048828125,
+    "y": 612
+  },
+  {
+    "name": "platform3",
+    "index": 2,
+    "src": "/images/platform3.png",
+    "x": 39.79999923706055,
+    "y": 677
+  },
+  {
+    "name": "platform3",
+    "index": 3,
+    "src": "/images/platform3.png",
+    "x": 1355.800048828125,
+    "y": 501
+  },
+  {
+    "name": "platform4",
+    "index": 0,
+    "src": "/images/platform4.png",
+    "x": 1475.800048828125,
+    "y": 185
+  },
+  {
+    "name": "platform4",
+    "index": 1,
+    "src": "/images/platform4.png",
+    "x": 854.7999877929688,
+    "y": 773
+  },
+  {
+    "name": "platform4",
+    "index": 2,
+    "src": "/images/platform4.png",
+    "x": 306.79998779296875,
+    "y": 648
+  }
+]

@@ -18,41 +18,41 @@ const images = {
     name: 'protagonist',
     src: protagonistImgSrc,
     width: 100,
-    element: null,
+    elements: [], // Change from element to elements
     zindex: 1,
   },
   redtree: {
     name: 'redtree',
     src: redTreeImgSrc,
     width: 200,
-    element: null
+    elements: [] // Change from element to elements
   },
   platform1: {
     name: 'platform1',
     src: platformImg1Src,
     width: 768,
-    element: null,
+    elements: [], // Change from element to elements
     zindex: -1
   },
   platform2: {
     name: 'platform2',
     src: platformImg2Src,
     width: 256,
-    element: null,
+    elements: [], // Change from element to elements
     zindex: -1
   },
   platform3: {
     name: 'platform3',
     src: platformImg3Src,
     width: 256,
-    element: null,
+    elements: [], // Change from element to elements
     zindex: -1
   },
   platform4: {
     name: 'platform4',
     src: platformImg4Src,
     width: 256,
-    element: null,
+    elements: [], // Change from element to elements
     zindex: -1
   } 
 };
@@ -67,8 +67,8 @@ const importJSON = function(json) {
     const data = imageData[i];
     const imageInfo = images[data.name];
 
-    if (imageInfo && imageInfo.element) {
-      const imageDiv = imageInfo.element;
+    if (imageInfo && imageInfo.elements) {
+      const imageDiv = imageInfo.elements[parseInt(data.index)];
       const x = parseFloat(data.x) || 0;
       const y = parseFloat(data.y) || 0;
       imageDiv.style.left = `${x}px`; // Set left position
@@ -89,12 +89,14 @@ const exportJSON = function() {
   const imageData = [];
 
   for (const imageName in images) {
-    if (images.hasOwnProperty(imageName) && images[imageName].element) {
+    if (images.hasOwnProperty(imageName) && images[imageName].elements) {
       const imageInfo = images[imageName];
-      const rect = imageInfo.element.getBoundingClientRect();
-      const x = rect.x + window.pageXOffset;
-      const y = rect.y + window.pageYOffset;
-      imageData.push({ name: imageName, src: imageInfo.src, x: x, y: y });
+      for (let i = 0; i < imageInfo.elements.length; i++) {
+        const rect = imageInfo.elements[i].getBoundingClientRect();
+        const x = rect.x + window.pageXOffset;
+        const y = rect.y + window.pageYOffset;
+        imageData.push({ name: imageName, index: i, src: imageInfo.src, x: x, y: y });
+      }
     }
   }
 
@@ -119,7 +121,8 @@ const addImage = function(imageName, x, y) {
   imageDiv.appendChild(image);
   document.body.appendChild(imageDiv);
 
-  imageInfo.element = imageDiv;
+  // Add the created image element to the elements array
+  imageInfo.elements.push(imageDiv);
 
   // Set the z-index of the image if it exists
   if (imageInfo.zindex) {
@@ -138,11 +141,12 @@ const addImage = function(imageName, x, y) {
   });
 };
 
+
 const centerProtagonist = function() {
   // const protagonistDiv = document.createElement('div');
   // protagonistDiv.appendChild(images.protagonist.element);
   // document.body.appendChild(protagonistDiv);
-  const protagonistDiv = images.protagonist.element;
+  const protagonistDiv = images.protagonist.elements[0];
   const imageTags = protagonistDiv.getElementsByTagName('img');
   const image = imageTags[0];
 
@@ -171,7 +175,7 @@ const addMovementCode = function() {
   let lastOnGround = false;
   let lastTimestamp = performance.now();
   let startJump = 0;
-  const image = images.protagonist.element.getElementsByTagName('img')[0];
+  const protagonistImage = images.protagonist.elements[0].getElementsByTagName('img')[0];
 
   document.addEventListener('keydown', function(event) {
     keysPressed[event.key] = true;
@@ -198,13 +202,13 @@ const addMovementCode = function() {
     if ('a' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
       moved = true;
-      image.classList.add('flip-horizontal');
+      protagonistImage.classList.add('flip-horizontal');
     }
   
     if ('d' in keysPressed) {
       worldPosition.x -= moveDistance * elapsed;
       moved = true;
-      image.classList.remove('flip-horizontal');
+      protagonistImage.classList.remove('flip-horizontal');
     }
   
     if ('w' in keysPressed && onGround) {
@@ -237,16 +241,16 @@ const addMovementCode = function() {
     if (!onGround) {
       moved = true;
       if (!lastOnGround) {
-        image.src = protagonistJumpImgSrc;
+        protagonistImage.src = protagonistJumpImgSrc;
         lastOnGround = true;
       }
     } else if (moved) {
       if (!lastMoved || lastOnGround) {
-        image.src = protagonistWalkImgSrc;
+        protagonistImage.src = protagonistWalkImgSrc;
         lastOnGround = false;
       }
     } else {
-      image.src = protagonistImgSrc;
+      protagonistImage.src = protagonistImgSrc;
       lastOnGround = false;
     }
     lastMoved = moved;
@@ -271,7 +275,7 @@ const addPlatforms = function() {
     const platformInfo = rndPlatforms[Math.floor(Math.random() * rndPlatforms.length)];
     const platformWidth = platformInfo.width;
     const platformHeight = 50;
-    const platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
+    let platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
     let platformTop = Math.floor(Math.random() * (window.innerHeight - platformHeight));
 
     // Check if the platform overlaps with any other element
@@ -282,15 +286,18 @@ const addPlatforms = function() {
         if (images.hasOwnProperty(imageName)) {
           const imageInfo = images[imageName];
           if (imageInfo.element !== null) {
-            const rect = imageInfo.element.getBoundingClientRect();
-            const left = rect.left;
-            const top = rect.top;
-            const width = rect.width;
-            const height = rect.height;
-            if (platformLeft < (left + width) && (platformLeft + platformWidth) > left && platformTop < (top + height) && (platformTop + platformHeight) > top) {
-              overlapping = true;
-              platformTop += height;
-              break;
+            for (let i = 0; i < imageInfo.elements.length; i++) {
+              const rect = imageInfo.elements[i].getBoundingClientRect();
+              const left = rect.left;
+              const top = rect.top;
+              const width = rect.width;
+              const height = rect.height;
+              if (platformLeft < (left + width) && (platformLeft + platformWidth) > left && platformTop < (top + height) && (platformTop + platformHeight) > top) {
+                overlapping = true;
+                platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
+                platformTop = Math.floor(Math.random() * (window.innerHeight - platformHeight));
+                break;
+              }
             }
           }
         }
@@ -308,10 +315,10 @@ const main = function() {
       addImage(imageName, 0, 0);
     }
   }
-  importJSON(locations);
-  exportJSON();
+  // importJSON(locations);
   addMovementCode();
   addPlatforms();
+  exportJSON();
 };
 
 const docReady = function(fn) {
@@ -325,3 +332,5 @@ const docReady = function(fn) {
 };
 
 docReady(main);
+
+// Fix the code such that element is named elements and is an array of elements.

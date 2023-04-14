@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p out out2 out3
-ffmpeg -i input.mp4 out/out%04d.png
+ffmpeg -i walk.mp4 out/out%04d.png
 for file in out/*.png; do
     filename=$(basename "$file")
     tcolor=magenta
@@ -14,13 +14,13 @@ for file in out/*.png; do
         "out2/$filename"
 done
 for num in `seq -w 0034 0066`; do
-    cp "out2/output_$num.png" "out3/output_$num.png"
+    cp "out2/out$num.png" "out3/out$num.png"
 done
 ffmpeg \
-    -framerate 30 -pattern_type glob -i 'out3/*.png' \
+    -framerate 60 -pattern_type glob -i 'out3/*.png' \
     -filter_complex "palettegen=reserve_transparent=on:transparency_color=0xff00ff" \
     -y palette.png &&
 ffmpeg \
-    -framerate 30 -pattern_type glob -i 'out3/*.png' \
+    -framerate 60 -pattern_type glob -i 'out3/*.png' \
     -i palette.png -lavfi "paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
-    -y walk.gif
+    -loop 0 -y walk.webp

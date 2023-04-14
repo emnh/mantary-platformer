@@ -1,7 +1,7 @@
 import './style.css';
 import interact from 'interact.js';
 import protagonistImgSrc from './images/protagonist.png';
-import protagonistWalkImgSrc from './images/walk.gif';
+import protagonistWalkImgSrc from './images/walk.webp';
 import protagonistJumpImgSrc from './images/jump.gif';
 import redTreeImgSrc from './images/redtree.png';
 import platformImgSrc from './images/platform1.png';
@@ -136,7 +136,7 @@ const centerProtagonist = function() {
 
 const addMovementCode = function() {
   let keysPressed = {};
-  let moveDistance = 0.1;
+  let moveDistance = 0.2;
   let lastMoved = false;
   let lastOnGround = false;
   let lastTimestamp = performance.now();
@@ -211,7 +211,7 @@ const addMovementCode = function() {
         lastOnGround = true;
       }
     } else if (moved) {
-      if (!lastMoved) {
+      if (!lastMoved || lastOnGround) {
         image.src = protagonistWalkImgSrc;
         lastOnGround = false;
       }

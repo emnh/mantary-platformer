@@ -1,11 +1,13 @@
 import './style.css';
 import interact from 'interact.js';
 import protagonistImgSrc from './images/protagonist.png';
+import protagonistWalkImgSrc from './images/walk.gif';
 import redTreeImgSrc from './images/redtree.png';
 import platformImgSrc from './images/platform1.png';
 import locations from './locations.json';
 
 let worldPosition = { x: 0, y: 0 };
+let lastMoved = false;
 let jsonTextarea;
 
 const images = {
@@ -134,8 +136,9 @@ const centerProtagonist = function() {
 
 const addMovementCode = function() {
   let keysPressed = {};
-  let moveDistance = 0.5;
+  let moveDistance = 0.1;
   let lastTimestamp = performance.now();
+  const image = images.protagonist.element.getElementsByTagName('img')[0];
 
   document.addEventListener('keydown', function(event) {
     keysPressed[event.key] = true;
@@ -149,22 +152,40 @@ const addMovementCode = function() {
     const timestamp = performance.now();
     const elapsed = timestamp - lastTimestamp;
     lastTimestamp = timestamp;
+    let moved = false;
 
     if ('a' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
+      moved = true;
+      image.classList.add('flip-horizontal');
     }
 
     if ('d' in keysPressed) {
       worldPosition.x -= moveDistance * elapsed;
+      moved = true;
+      image.classList.remove('flip-horizontal');
     }
 
     if ('w' in keysPressed) {
       worldPosition.y += moveDistance * elapsed;
+      moved = true;
     }
 
     if ('s' in keysPressed) {
       worldPosition.y -= moveDistance * elapsed;
+      moved = true;
     }
+
+    if (moved) {
+      // Set the image to walking if it's not already
+      if (!lastMoved) {
+        image.src = protagonistWalkImgSrc;
+      }
+    } else {
+      // Set the image to standing
+      image.src = protagonistImgSrc;
+    }
+    lastMoved = moved;
 
     document.body.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
 

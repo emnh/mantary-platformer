@@ -435,7 +435,7 @@ const addForest = function() {
   // forestDiv.style.position = 'absolute';
 
   for (let x = -window.innerWidth; x < 2 * window.innerWidth; x += 100) {
-    for (let y1 = 0.5 * window.innerHeight; y1 < window.innerHeight - 100; y1 += 200) {
+    for (let y1 = 0.0 * window.innerHeight; y1 < window.innerHeight - 100; y1 += 100) {
       const y = y1 + 200 * Math.random();
       const x2 = x + 100 * Math.random();
       const div = addImage('redtree', x2, y, false, forestDiv);

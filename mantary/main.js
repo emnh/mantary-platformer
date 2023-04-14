@@ -8,12 +8,15 @@ import platformImg1Src from './images/platform1.png';
 import platformImg2Src from './images/platform2.png';
 import platformImg3Src from './images/platform3.png';
 import platformImg4Src from './images/platform4.png';
+import platformImg5Src from './images/platform5.png';
+import fireballSrc from './images/fireball.png';
 import locations from './locations.json';
 
 const appBody = document.getElementById('app');
 let worldPosition = { x: 0, y: 0 };
 let velocityY = 0;
 let jsonTextarea;
+let facing = 'right';
 
 const images = {
   protagonist: {
@@ -57,12 +60,20 @@ const images = {
     width: 256,
     elements: [], // Change from element to elements
     zindex: 1
-  } 
+  },
+  platform5: {
+    name: 'platform5',
+    src: platformImg5Src,
+    width: 512,
+    elements: [], // Change from element to elements
+    zindex: 1
+  },
 };
 
-const rndPlatforms = [images['platform2'], images['platform3'], images['platform4']];
+const rndPlatforms = [images['platform2'], images['platform3'], images['platform4'], images['platform5']];
 const platforms = [];
 const forest = [];
+const fireballs = [];
 
 const worldToProtagonist = function(worldX, worldY) {
   const protagonistDiv = images.protagonist.elements[0];
@@ -203,6 +214,7 @@ const addImage = function(imageName, x, y, draggable = true, container = appBody
 let ix = 0;
 let lastIx = 0;
 const redrawForest = function(cx, cy) {
+  // TODO: Should be the original window.innerWidth, or we need to regen the forest on browser resize.
   const wh = window.innerWidth;
   ix = Math.round(cx * 2 / wh);
   if (ix === lastIx) {
@@ -246,6 +258,7 @@ const addMovementCode = function() {
   let lastState = 'idle';
   let lastTimestamp = performance.now();
   let startJump = 0;
+  let startFireball = 0;
   const protagonistImage = images.protagonist.elements[0].getElementsByTagName('img')[0];
 
   document.addEventListener('keydown', function(event) {
@@ -318,12 +331,14 @@ const addMovementCode = function() {
       worldPosition.x += moveDistance * elapsed;
       moved = true;
       protagonistImage.classList.add('flip-horizontal');
+      facing = 'left';
     }
   
     if ('d' in keysPressed || 'D' in keysPressed || 'ArrowRight' in keysPressed) {
       worldPosition.x -= moveDistance * elapsed;
       moved = true;
       protagonistImage.classList.remove('flip-horizontal');
+      facing = 'right';
     }
   
     if (('w' in keysPressed || 'W' in keysPressed || 'ArrowUp' in keysPressed) && onGround) {
@@ -337,6 +352,59 @@ const addMovementCode = function() {
     if ('s' in keysPressed) {
       // worldPosition.y -= moveDistance * elapsed;
       // moved = true;
+    }
+
+    const fireballElapsed = performance.now() - startFireball;
+    if (' ' in keysPressed && fireballElapsed >= 250) {
+      // Add a fireball div
+      const fireball = document.createElement('img');
+      fireball.width = 70;
+      fireball.src = fireballSrc;
+      fireball.classList.add('fireball');
+      fireball.style.position = 'absolute';
+      const {x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
+      fireball.style.left = x + 'px';
+      fireball.style.top = y + 'px';
+      fireball.dataset.velocityX = 1;
+      if (facing === 'left') {
+        fireball.classList.add('flip-horizontal');
+      } else {
+        fireball.dataset.velocityX = -fireball.dataset.velocityX;
+      }
+      fireball.dataset.rotation = 0;
+      fireball.dataset.facing = facing;
+      fireball.style.zIndex = 3;
+      appBody.appendChild(fireball);
+      fireballs.push(fireball);
+      startFireball = performance.now();
+    }
+    // Update fireballs
+    // console.log(fireballs.length);
+    
+    const bounds = appBody.getBoundingClientRect();
+    for (let i = 0; i < fireballs.length; i++) {
+      const fireball = fireballs[i];      
+      const fireballWorld = {
+        x: parseFloat(fireball.style.left),
+        y: parseFloat(fireball.style.top),
+      };
+      fireballWorld.x -= fireball.dataset.velocityX * elapsed;
+      //const fx = fireballWorld.x + worldPosition.x;
+      // const {x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
+      const fx = fireballWorld.x;
+      // console.log(bounds);
+      if (fx <= -bounds.x || fx >= -(bounds.x - window.innerWidth + fireball.width)) {
+        fireball.remove();
+        fireballs.splice(i, 1);
+        i--;
+        continue;
+        // fireball.dataset.velocityX = -fireball.dataset.velocityX;
+      }
+      fireball.dataset.rotation = parseFloat(fireball.dataset.rotation) + 10;
+      fireball.style.left = fireballWorld.x + 'px';
+      fireball.style.top = fireballWorld.y + 'px';
+      fireball.style.transform = `rotate(${fireball.dataset.rotation}deg)`;
+      fireball.style.filter = `hue-rotate(${0.1 * Math.abs(Math.sin(fireball.dataset.rotation * 0.1))}rad)`;
     }
   
     // Apply gravity to the character when not on the ground

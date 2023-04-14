@@ -4,7 +4,10 @@ import protagonistImgSrc from './images/protagonist.png';
 import protagonistWalkImgSrc from './images/walk.webp';
 import protagonistJumpImgSrc from './images/jump.gif';
 import redTreeImgSrc from './images/redtree.png';
-import platformImgSrc from './images/platform1.png';
+import platformImg1Src from './images/platform1.png';
+import platformImg2Src from './images/platform2.png';
+import platformImg3Src from './images/platform3.png';
+import platformImg4Src from './images/platform4.png';
 import locations from './locations.json';
 
 let worldPosition = { x: 0, y: 0 };
@@ -12,23 +15,50 @@ let jsonTextarea;
 
 const images = {
   protagonist: {
+    name: 'protagonist',
     src: protagonistImgSrc,
     width: 100,
     element: null,
     zindex: 1,
   },
   redtree: {
+    name: 'redtree',
     src: redTreeImgSrc,
     width: 200,
     element: null
   },
   platform1: {
-    src: platformImgSrc,
+    name: 'platform1',
+    src: platformImg1Src,
     width: 768,
     element: null,
     zindex: -1
-  }
+  },
+  platform2: {
+    name: 'platform2',
+    src: platformImg2Src,
+    width: 256,
+    element: null,
+    zindex: -1
+  },
+  platform3: {
+    name: 'platform3',
+    src: platformImg3Src,
+    width: 256,
+    element: null,
+    zindex: -1
+  },
+  platform4: {
+    name: 'platform4',
+    src: platformImg4Src,
+    width: 256,
+    element: null,
+    zindex: -1
+  } 
 };
+
+const rndPlatforms = [images['platform2'], images['platform3'], images['platform4']];
+const platforms = [];
 
 const importJSON = function(json) {
   const imageData = json;
@@ -59,7 +89,7 @@ const exportJSON = function() {
   const imageData = [];
 
   for (const imageName in images) {
-    if (images.hasOwnProperty(imageName)) {
+    if (images.hasOwnProperty(imageName) && images[imageName].element) {
       const imageInfo = images[imageName];
       const rect = imageInfo.element.getBoundingClientRect();
       const x = rect.x + window.pageXOffset;
@@ -75,7 +105,7 @@ const exportJSON = function() {
   jsonTextarea.style.width = 400 + 'px';
 };
 
-const addImage = function(imageName) {
+const addImage = function(imageName, x, y) {
   const imageInfo = images[imageName];
 
   const image = new Image();
@@ -84,8 +114,8 @@ const addImage = function(imageName) {
 
   const imageDiv = document.createElement('div');
   imageDiv.style.position = 'absolute'; // Set position to absolute
-  imageDiv.style.left = '0'; // Initialize left position to 0
-  imageDiv.style.top = '0'; // Initialize top position to 0
+  imageDiv.style.left = x + 'px'; // Initialize left position to 0
+  imageDiv.style.top = y + 'px'; // Initialize top position to 0
   imageDiv.appendChild(image);
   document.body.appendChild(imageDiv);
 
@@ -195,7 +225,7 @@ const addMovementCode = function() {
       velocityY -= 0.1 * elapsed;
       worldPosition.y -= velocityY * elapsed;
       //startJump = performance.now();
-      console.log(startJump, performance.now() - startJump);
+      // console.log(startJump, performance.now() - startJump);
     } else if (!onGround) {
       velocityY += 0.05 * elapsed;
       worldPosition.y -= velocityY * elapsed;
@@ -234,17 +264,54 @@ const addMovementCode = function() {
   requestAnimationFrame(updateWorldPosition);
 };
 
-// Center the protagonist image
+const addPlatforms = function() {
+  // Add random platforms to the world
+  const numPlatforms = 10;
+  for (let i = 0; i < numPlatforms; i++) {
+    const platformInfo = rndPlatforms[Math.floor(Math.random() * rndPlatforms.length)];
+    const platformWidth = platformInfo.width;
+    const platformHeight = 50;
+    const platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
+    let platformTop = Math.floor(Math.random() * (window.innerHeight - platformHeight));
+
+    // Check if the platform overlaps with any other element
+    let overlapping = true;
+    while (overlapping) {
+      overlapping = false;
+      for (const imageName in images) {
+        if (images.hasOwnProperty(imageName)) {
+          const imageInfo = images[imageName];
+          if (imageInfo.element !== null) {
+            const rect = imageInfo.element.getBoundingClientRect();
+            const left = rect.left;
+            const top = rect.top;
+            const width = rect.width;
+            const height = rect.height;
+            if (platformLeft < (left + width) && (platformLeft + platformWidth) > left && platformTop < (top + height) && (platformTop + platformHeight) > top) {
+              overlapping = true;
+              platformTop += height;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // Add the platform to the world
+    addImage(platformInfo.name, platformLeft, platformTop);
+  }
+}
 
 const main = function() {
   for (const imageName in images) {
-    if (images.hasOwnProperty(imageName)) {
-      addImage(imageName);
+    if (images.hasOwnProperty(imageName) && imageName ==="protagonist") {
+      addImage(imageName, 0, 0);
     }
   }
   importJSON(locations);
   exportJSON();
   addMovementCode();
+  addPlatforms();
 };
 
 const docReady = function(fn) {
@@ -258,5 +325,3 @@ const docReady = function(fn) {
 };
 
 docReady(main);
-
-// Update this code to add jumping physics to the character.

@@ -9,6 +9,7 @@ import platformImg2Src from './images/platform2.png';
 import platformImg3Src from './images/platform3.png';
 import platformImg4Src from './images/platform4.png';
 import platformImg5Src from './images/platform5.png';
+import platformImg6Src from './images/platform6.png';
 import fireballSrc from './images/fireball.png';
 import locations from './locations.json';
 
@@ -23,7 +24,7 @@ const images = {
     name: 'protagonist',
     src: protagonistImgSrc,
     height: 150,
-    elements: [], // Change from element to elements
+    elements: [],
     zindex: 2,
   },
   redtree: {
@@ -31,46 +32,61 @@ const images = {
     src: redTreeImgSrc,
     width: 200,
     elements: [],
-    zIndex: -2 // Change from element to elements
+    zIndex: -2
   },
   platform1: {
     name: 'platform1',
     src: platformImg1Src,
     width: 768,
-    elements: [], // Change from element to elements
+    elements: [],
     zindex: 1
   },
   platform2: {
     name: 'platform2',
     src: platformImg2Src,
     width: 256,
-    elements: [], // Change from element to elements
+    elements: [],
     zindex: 1
   },
   platform3: {
     name: 'platform3',
     src: platformImg3Src,
     width: 256,
-    elements: [], // Change from element to elements
+    elements: [],
     zindex: 1
   },
   platform4: {
     name: 'platform4',
     src: platformImg4Src,
     width: 256,
-    elements: [], // Change from element to elements
+    elements: [],
     zindex: 1
   },
   platform5: {
     name: 'platform5',
     src: platformImg5Src,
     width: 512,
-    elements: [], // Change from element to elements
-    zindex: 1
+    elements: [],
+    zindex: 1,
+    walkOffset: 128
+  },
+  platform6: {
+    name: 'platform6',
+    src: platformImg6Src,
+    width: 512,
+    elements: [],
+    zindex: 1,
+    walkOffset: 150
   },
 };
 
-const rndPlatforms = [images['platform2'], images['platform3'], images['platform4'], images['platform5']];
+const rndPlatforms = [
+  images['platform2'],
+  images['platform3'],
+  images['platform4'],
+  images['platform5'],
+  images['platform6']
+];
 const platforms = [];
 const forest = [];
 const fireballs = [];
@@ -279,7 +295,8 @@ const addMovementCode = function() {
       // if (protagonistRect.bottom <= platformRect.bottom && protagonistRect.bottom >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
       // if (worldPosition.y <= platformRect.bottom && worldPosition.y >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
       const insidePlatform = 10;
-      const platformThreshold = platformRect.top + 100;
+      const walkOffset = images[platform.dataset.name].walkOffset ?? 100;
+      const platformThreshold = platformRect.top + walkOffset;
       const x = protagonistRect.left;
       const y1 = protagonistRect.bottom;
       const y2 = protagonistRect.bottom + velocityY;
@@ -489,6 +506,7 @@ const addPlatforms = function() {
 
     // Add the platform to the world
     const platform = addImage(platformInfo.name, platformLeft, platformTop);
+    platform.dataset.name = platformInfo.name;
     platforms.push(platform);
   }
 }

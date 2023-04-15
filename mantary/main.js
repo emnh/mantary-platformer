@@ -91,6 +91,21 @@ const platforms = [];
 const forest = [];
 const fireballs = [];
 
+const intervalsOverlap = function(interval1, interval2) {
+  // Get the minimum and maximum values for each interval
+  const interval1Min = Math.min(interval1[0], interval1[1]);
+  const interval1Max = Math.max(interval1[0], interval1[1]);
+  const interval2Min = Math.min(interval2[0], interval2[1]);
+  const interval2Max = Math.max(interval2[0], interval2[1]);
+
+  // Check if the intervals overlap
+  if (interval1Max >= interval2Min && interval2Max >= interval1Min) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const worldToProtagonist = function(worldX, worldY) {
   const protagonistDiv = images.protagonist.elements[0];
   const imageTags = protagonistDiv.getElementsByTagName('img');
@@ -286,7 +301,7 @@ const addMovementCode = function() {
     delete keysPressed[event.key];
   });
 
-  const boundsCheck = function(velocityY, jumping) {
+  const boundsCheck = function(elapsedVelocityY, jumping) {
     let onGround = false;
     for (let i = 0; i < platforms.length; i++) {
       const platform = platforms[i];
@@ -294,21 +309,24 @@ const addMovementCode = function() {
       const protagonistRect = protagonistImage.getBoundingClientRect();
       // if (protagonistRect.bottom <= platformRect.bottom && protagonistRect.bottom >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
       // if (worldPosition.y <= platformRect.bottom && worldPosition.y >= platformRect.top && protagonistRect.right >= platformRect.left && protagonistRect.left <= platformRect.right) {
-      const insidePlatform = 10;
+      const insidePlatform = 50;
       const walkOffset = images[platform.dataset.name].walkOffset ?? 100;
       const platformThreshold = platformRect.top + walkOffset;
       const x = protagonistRect.left;
       const y1 = protagonistRect.bottom;
-      const y2 = protagonistRect.bottom + velocityY;
+      const y2 = protagonistRect.bottom + elapsedVelocityY;
       const width = protagonistRect.width;
       const height = protagonistRect.height;
-      const check1 =
-        y1 >= platformThreshold &&
-        y1 <= platformThreshold + insidePlatform;
-      const check2 =
-        y2 >= platformThreshold &&
-        y2 <= platformThreshold + insidePlatform;
-      if ((check1 || check2) && !jumping &&
+      // const check1 =
+      //   y1 >= platformThreshold &&
+      //   y1 <= platformThreshold + insidePlatform;
+      // const check2 =
+      //   y2 >= platformThreshold &&
+      //   y2 <= platformThreshold + insidePlatform;
+      const interval1 = [y1, y2];
+      const interval2 = [platformThreshold, platformThreshold + insidePlatform];
+      const overlaps = intervalsOverlap(interval1, interval2);
+      if (overlaps && !jumping &&
           x + width >= platformRect.left &&
           x <= platformRect.right) {
         // worldPosition.y = (platformRect.top + protagonistRect.height);
@@ -342,7 +360,7 @@ const addMovementCode = function() {
     //   worldPosition = 0;
     // }
     
-    let onGround = boundsCheck(velocityY, jumping);
+    let onGround = boundsCheck(velocityY * elapsed, jumping);
   
     if ('a' in keysPressed || 'A' in keysPressed || 'ArrowLeft' in keysPressed) {
       worldPosition.x += moveDistance * elapsed;
@@ -437,7 +455,7 @@ const addMovementCode = function() {
       velocityY = 0;
     }
 
-    onGround = boundsCheck(velocityY, jumping);
+    onGround = boundsCheck(velocityY * elapsed, jumping);
   
     // Change the character image depending on its state
     if (!onGround) {

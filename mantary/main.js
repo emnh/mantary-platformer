@@ -398,8 +398,13 @@ const addMovementCode = function() {
       fireball.classList.add('fireball');
       fireball.style.position = 'absolute';
       const {x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
-      fireball.style.left = x + 'px';
-      fireball.style.top = y + 'px';
+      const fireballHeight = fireball.width;
+      const faceMultiplier = facing === 'left' ? -1 : 1;
+      const faceWidthMultiplier = facing === 'left' ? 0 : 1;
+      const x2 = x + faceMultiplier * protagonistImage.width - faceWidthMultiplier * fireball.width / 2;
+      const y2 = y + protagonistImage.height / 2 - fireballHeight / 2;
+      fireball.style.left = x2 + 'px';
+      fireball.style.top = y2 + 'px';
       fireball.dataset.velocityX = 1;
       if (facing === 'left') {
         fireball.classList.add('flip-horizontal');
@@ -576,19 +581,14 @@ const addForest = function() {
   }
 };
 
-const main = function() {
-  // Add background image
+const onResize = function() {
+  document.body.width = window.innerWidth;
+  document.body.height = window.innerHeight;
+};
 
-  // const img = document.createElement('img');
-  // img.id = 'background';
-  // img.width = window.innerWidth;
-  // img.height = window.innerHeight;
-  // img.src = backgroundImgSrc;
-  // img.style.zIndex = -2;
-  // img.style.position = 'absolute';
-  // img.style.left = 0;
-  // img.style.top = 0;
-  // appBody.appendChild(img);
+const main = function() {
+  // Add resize listener
+  window.addEventListener('resize', onResize);
 
   for (const imageName in images) {
     if (images.hasOwnProperty(imageName) && imageName ==="protagonist") {

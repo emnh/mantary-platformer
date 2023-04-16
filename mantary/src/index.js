@@ -29,14 +29,15 @@ function main(state) {
 function getComponents() {
     const player = importedFunctions.player();
     const docInterface = importedFunctions.docInterface(document);
+    const testContext = importedFunctions.testContext();
     return {
         player,
-        docInterface
+        docInterface,
+        testContext
     }
 };
 
-const state = {
-    components: getComponents(),
-    functions: importedFunctions.bindFunctions(importedFunctions)
-};
+const state = {};
+state.components = getComponents();
+state.functions = importedFunctions.bindFunctions(state, importedFunctions)
 importedFunctions.docReady(state, () => main(state));

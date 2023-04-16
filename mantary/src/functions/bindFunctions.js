@@ -3,7 +3,7 @@ export function bindFunctions(state, importedFunctions) {
     const boundFunctions = state.functions;
     for (const funcName in importedFunctions) {
         const func = importedFunctions[funcName];
-        console.log(func);
+        // console.log(func);
         if (func.hasOwnProperty('stateful') && func.stateful) {
             // Stateful function, bind it to state
             boundFunctions[func.name] = (...args) => func(state, ...args);

@@ -1,4 +1,4 @@
-export function getCallingFunctionName(functions, index) {
+export function getCallingFunctionName({ functions: f }, index) {
     const error = new Error();
     // console.log("getCallingFunctionName: error.stack:", error.stack);
     try {
@@ -7,6 +7,6 @@ export function getCallingFunctionName(functions, index) {
         return name;
     } catch (err) {
         console.error(err);
-        return functions.generateGuid();
+        return f.generateGuid();
     }
 }

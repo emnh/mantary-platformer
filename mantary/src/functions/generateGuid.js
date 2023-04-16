@@ -1,3 +1,5 @@
+// TODO: Function is not deterministic. Move or change it.
+
 export function generateGuid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)

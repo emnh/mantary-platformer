@@ -1,23 +1,25 @@
 export function docInterface(doc) {
 
-    function start(state) {
+    function start() {
         doc.innerHTML = '';
     }
 
-    function stop(state) {
+    function stop() {
         doc.innerHTML = '';
     }
 
-    function serialize(state) {
+    function serialize() {
         return doc.innerHTML;
     }
 
-    function appendChild(state, element) {
+    function appendChild(element) {
         doc.body.appendChild(element);
     }
 
     return {
         start, stop, serialize, appendChild,
-        addEventListener: (...args) => doc.addEventListener(...args)
+        addEventListener: (...args) => doc.addEventListener(...args),
+        createElement: (...args) => doc.createElement(...args),
+        getElementById: (...args) => doc.getElementById(...args),
     };
 }

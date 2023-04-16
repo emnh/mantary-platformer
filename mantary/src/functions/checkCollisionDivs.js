@@ -1,4 +1,4 @@
-import { report } from "./report";
+import { checkCollisionRects } from 'src\functions\checkCollisionRects.js';
 
 export function checkCollisionDivs(div1, div2) {
     const rect1 = div1.getBoundingClientRect();
@@ -7,18 +7,7 @@ export function checkCollisionDivs(div1, div2) {
     return checkCollisionRects(rect1, rect2);
 }
 
-export function checkCollisionRects(rect1, rect2) {
-    return (
-        rect1.left < rect2.right &&
-        rect1.right > rect2.left &&
-        rect1.top < rect2.bottom &&
-        rect1.bottom > rect2.top
-    );
-}
-
-
-
-export function testCollision() {
+export function testCollision(options) {
     // Create two divs
     const div1 = document.createElement("div");
     div1.style.width = "100px";
@@ -38,7 +27,7 @@ export function testCollision() {
     div2.style.top = "80px";
     document.body.appendChild(div2);
 
-    report("Checking collision divs", checkCollisionDivs(div1, div2));
+    options.report("Checking collision divs", checkCollisionDivs(div1, div2));
 };
 
 

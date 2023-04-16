@@ -4,7 +4,12 @@ export function testCollisionDivs({ functions: f, components: c }) {
 
     function setup() {
         const div = document.createElement("div");
-        context.appendChild(div);
+        context.contextAppendChild(div);
+        // div.style.position = "absolute";
+        div.style.display = "block";
+        // div.style.position = "relative";
+        // div.style.width = "auto";
+        // div.style.height = "auto";
 
         const div1 = document.createElement("div");
         div1.style.width = "100px";

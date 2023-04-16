@@ -2,10 +2,11 @@ export function reportTest(initialization, assertions, {
     bodyAppendChild,
     contextAppendChild,
     createElement,
+    fitParentToChildren,
     getElementById,
     getTestFunctionName,
     reportAssertion,
-    setContainer
+    setContainer,
 }) {
     console.log("Reporting test...");
     // TODO: Look for first function named test instead of fixed index?
@@ -14,11 +15,25 @@ export function reportTest(initialization, assertions, {
     const containerId = "#report-container-" + name;
     console.log("Container:", containerId);
     const container = createElement("div");
-    appendChild(container);
+    container.style.border = "1px solid black";
+    // container.style.position = "relative";
+    container.style.width = "auto";
+    container.style.height = "auto";
+    container.style.padding = "10px";
+    container.style.margin = "10px";
+    // container.style.float = "left";
+    container.style.display = "inline-block";
+    bodyAppendChild(container);
     setContainer(container);
     container.id = containerId;
     initialization();
-    const fns = { appendChild, createElement, getElementById };
+    const fns = {
+        bodyAppendChild,
+        contextAppendChild,
+        createElement,
+        fitParentToChildren,
+        getElementById,
+    };
     console.log("FNs:", fns);
     for (const i in assertions) {
         const assertion = assertions[i];
@@ -31,4 +46,5 @@ export function reportTest(initialization, assertions, {
             console.error(err);
         }
     }
+    fitParentToChildren(container);
 }

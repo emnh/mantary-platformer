@@ -6,7 +6,7 @@ export function checkCollisionDivs(functions, div1, div2) {
     return checkCollisionRects(rect1, rect2);
 }
 
-export function testCollision(options) {
+export function testCollision(state) {
 
     function initialization(context) {
         const div = document.createElement("div");
@@ -35,10 +35,10 @@ export function testCollision(options) {
     }
 
     function assertion(context) {
-        return options.functions.checkCollisionDivs(context.div1, context.div2);
+        return state.functions.checkCollisionDivs(context.div1, context.div2);
     }
 
     assertion.description = "Checking collision divs";
 
-    options.functions.reportTest(initialization, [assertion]);
+    state.functions.reportTest(initialization, [assertion]);
 };

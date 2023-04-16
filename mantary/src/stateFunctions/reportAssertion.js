@@ -1,5 +1,5 @@
 export function reportAssertion(functions, name, message, success) {
-  let reportContainer = document.querySelector("#report-container-" + name);
+  let reportContainer = document.querySelector(name);
   if (!reportContainer) {
     reportContainer = document.createElement("div");
     reportContainer.id = "report-container";

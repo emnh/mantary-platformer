@@ -1,11 +1,13 @@
-function start() {
-
-}
-
-function stop() {
-
-}
-
 export function player() {
+    let state = {};
+
+    function start() {
+
+    }
+
+    function stop() {
+
+    }
+
     return { start, stop, };
 }

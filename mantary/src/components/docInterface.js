@@ -1,15 +1,23 @@
-function start(state) {
-    state.document.body.innerHTML = '';
-}
+export function docInterface(doc) {
 
-function stop(state) {
-    state.document.body.innerHTML = '';
-}
+    function start(state) {
+        doc.innerHTML = '';
+    }
 
-function appendChild(state, element) {
-    state.document.appendChild(element);
-}
+    function stop(state) {
+        doc.innerHTML = '';
+    }
 
-export function player() {
-    return { start, stop, appendChild };
+    function serialize(state) {
+        return doc.innerHTML;
+    }
+
+    function appendChild(state, element) {
+        doc.body.appendChild(element);
+    }
+
+    return {
+        start, stop, serialize, appendChild,
+        addEventListener: (...args) => doc.addEventListener(...args)
+    };
 }

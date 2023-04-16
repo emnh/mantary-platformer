@@ -4,26 +4,39 @@ import * as importedFunctions from './imports.js';
 
 function game(state) {
     console.log("Game started");
-    const functions = importedFunctions.enumerateFunctions(importedFunctions);
-    for (const func of functions) {
-        console.log(func.name);
-    }
+    importedFunctions.startComponents(state.components);
+    // const functions = importedFunctions.enumerateFunctions(importedFunctions);
+    // for (const func of functions) {
+    //     console.log(func.name);
+    // }
 };
 
-function runTests() {
+function test(state) {
     const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
-    const boundFunctions = importedFunctions.bindFunctions(importedFunctions);
-    importedFunctions.runTests(tests, boundFunctions);
+    importedFunctions.startComponents(state.components);
+    importedFunctions.runTests(tests, state);
 };
 
 function main(state) {
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     if (urlParams.has('test')) {
-        runTests();
+        test(state);
     } else {
         game(state);
     }
 }
 
-const state = {};
-importedFunctions.docReady(() => main(state));
+function getComponents() {
+    const player = importedFunctions.player();
+    const docInterface = importedFunctions.docInterface(document);
+    return {
+        player,
+        docInterface
+    }
+};
+
+const state = {
+    components: getComponents(),
+    functions: importedFunctions.bindFunctions(importedFunctions)
+};
+importedFunctions.docReady(state, () => main(state));

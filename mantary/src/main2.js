@@ -22,22 +22,13 @@ const keyBindings = {
     'ArrowDown': moveDown,
 };
 
-function addEventListeners(keysPressed) {
-    document.addEventListener('keydown', function (event) {
-        keysPressed[event.key] = true;
-        // console.log(event.key);
-    });
 
-    document.addEventListener('keyup', function (event) {
-        delete keysPressed[event.key];
-    });
-}
+
+
 
 function game() {
 
 };
-
-
 
 function main() {
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
@@ -48,4 +39,5 @@ function main() {
     }
 }
 
+const state = {};
 docReady(main);

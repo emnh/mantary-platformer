@@ -1,4 +1,4 @@
-export function player() {
+export function Player() {
     let state = {};
 
     function start() {

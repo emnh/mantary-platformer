@@ -1,4 +1,4 @@
-export function testContext(f) {
+export function TestContext(testName, f) {
 
     const { reportTest, reportAssertion, fitParentToChildren } = f;
 
@@ -6,11 +6,13 @@ export function testContext(f) {
         container: null,
         containerId: null,
         description: null,
+        itText: null,
         name: null
     };
 
     function start() {
-        state = reportTest({...f, setContainer });
+        state = reportTest(testName, {...f, setContainer });
+        state.name = testName;
     }
 
     function stop() {
@@ -26,6 +28,7 @@ export function testContext(f) {
     }
 
     function describe(text, fn) {
+        console.log("Decribe:", text);
         state.description = text;
         fn();
         fitParentToChildren(state.container);
@@ -34,19 +37,21 @@ export function testContext(f) {
     function expect(actual) {
         return {
             toBe: function (expected) {
+                const msg = state.description + ": " + state.itText + ": ";
                 if (actual !== expected) {
                     const err = new Error(`Expected ${expected}, but got ${actual}`);
-                    reportAssertion(state.name, state.containerId, state.description + ": " + err.toString(), false, f);
-                    console.error(err);
+                    reportAssertion(state.name, state.containerId, msg + err.toString(), false, f);
+                    // console.error(err);
                     throw err;
                 } else {
-                    reportAssertion(state.name, state.containerId, state.description, expected, f);
+                    reportAssertion(state.name, state.containerId, msg, true, f);
                 }
             }
         }
     }
 
     function it(text, testFunc) {
+        state.itText = text;
         try {
             testFunc();
             // TODO: console interface and dependency injection

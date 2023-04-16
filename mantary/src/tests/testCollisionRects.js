@@ -1,7 +1,7 @@
 export function testCollisionRects({
     checkCollisionRects, describe, it, expect
 }) {
-    describe("checkCollisionRects", () => {
+    describe("Checking rectange collisions", () => {
         const rect1 = { left: 0, top: 0, right: 100, bottom: 100 };
         const rect2 = { left: 50, top: 50, right: 150, bottom: 150 };
         const rect3 = { left: 200, top: 200, right: 300, bottom: 300 };

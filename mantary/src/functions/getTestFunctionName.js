@@ -5,6 +5,7 @@ export function getTestFunctionName() {
         const functions = error.stack.split('\n');
         for (const i in functions) {
             const func = functions[i];
+            // console.log(func);
             if (func.includes('at test')) {
                 // console.log("Test func", func);
                 const functionName = func.trim().split(' ')[1];

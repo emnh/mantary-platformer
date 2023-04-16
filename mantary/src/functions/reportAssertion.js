@@ -18,7 +18,7 @@ export function reportAssertion(name, id, message, success,
     // report.style.display = "inline";
     report.style.position = "relative";
     // report.style.float = "left";
-    report.style.display = "inline-block";
+    report.style.display = "block";
 
     const nameElement = createElement("h2");
     nameElement.style.display = "inline-block";

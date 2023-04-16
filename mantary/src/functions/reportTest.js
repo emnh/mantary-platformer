@@ -1,16 +1,15 @@
-export function reportTest({
+export function reportTest(name, {
     bodyAppendChild,
     contextAppendChild,
     createElement,
     fitParentToChildren,
     getElementById,
-    getTestFunctionName,
     setContainer,
 }) {
     console.log("Reporting test...");
     // TODO: Look for first function named test instead of fixed index?
     // Might be different stack on different browsers.
-    const name = getTestFunctionName();
+    // const name = getTestFunctionName();
     const containerId = "#report-container-" + name;
     console.log("Container:", containerId);
     const container = createElement("div");
@@ -19,9 +18,9 @@ export function reportTest({
     container.style.width = "auto";
     container.style.height = "auto";
     container.style.padding = "10px";
-    container.style.margin = "10px";
+    container.style.margin = "2em";
     // container.style.float = "left";
-    container.style.display = "inline-block";
+    container.style.display = "block";
     bodyAppendChild(container);
     setContainer(container);
     container.id = containerId;    

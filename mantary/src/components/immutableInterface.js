@@ -1,4 +1,4 @@
-export function immutableInterface(immutable) {
+export function ImmutableInterface(immutable) {
     function start() {
 
     }

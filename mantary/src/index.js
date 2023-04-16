@@ -12,25 +12,25 @@ function game(state) {
     importedFunctions.drawDivs(state.components.docInterface);
 };
 
-function test(state) {
+function runTestSuite(state) {
     const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
     importedFunctions.startComponents(state.components);
-    const testContext = importedFunctions.testContext;
+    const testContext = importedFunctions.TestContext;
     importedFunctions.runTests(tests, state, testContext);
 };
 
 function main(state) {
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     if (urlParams.has('test')) {
-        test(state);
+        runTestSuite(state);
     } else {
         game(state);
     }
 }
 
 function getComponents() {
-    const player = importedFunctions.player();
-    const docInterface = importedFunctions.docInterface(document);
+    const player = importedFunctions.Player();
+    const docInterface = importedFunctions.DocInterface(document);
     return {
         player,
         docInterface

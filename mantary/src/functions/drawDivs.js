@@ -1,4 +1,4 @@
-export function drawDivs({ createElement, appendChild }){
+export function drawDivs({ createElement, bodyAppendChild }){
     // Create the red div
     const redDiv = createElement("div");
     redDiv.style.width = "100px";
@@ -29,5 +29,5 @@ export function drawDivs({ createElement, appendChild }){
     containerDiv.appendChild(blackDiv);
 
     // Add the container div to the c.docInterface
-    appendChild(containerDiv);
+    bodyAppendChild(containerDiv);
 }

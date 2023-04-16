@@ -59,7 +59,14 @@ function enumerateJSFiles(directory) {
                 if (err) {
                   console.error(err);
                 } else {
-                  const ast = acorn.parse(data, acornOptions);
+                  let ast = null;
+                  try {
+                    ast = acorn.parse(data, acornOptions);
+                  } catch (err) {
+                    console.error("Error parsing file:", fullPath);
+                    console.error(err);
+                    return;
+                  }
                   const signatures = extractFunctionSignatures(ast);
                   console.log(`Functions in ${fullPath}:`);
                   console.log(signatures.join('\n'));
@@ -73,6 +80,17 @@ function enumerateJSFiles(directory) {
   });
 }
 
+function wrapInTryCatch(func) {
+  return function() {
+    try {
+      return func.apply(this, arguments);
+    } catch (err) {
+      console.error("Error caught in function:", func.name);
+      console.error(err);
+    }
+  }
+}
+
 // define the function to watch the directory for file changes
 function watchDirectory(directory) {
   const watcher = chokidar.watch(directory, { ignoreInitial: true });
@@ -83,7 +101,7 @@ function watchDirectory(directory) {
         if (err) {
           console.error(err);
         } else {
-          enumerateJSFiles(directoryToWatch);
+          wrapInTryCatch(() => enumerateJSFiles(directory))();
           // const ast = acorn.parse(data, acornOptions);
           // const signatures = extractFunctionSignatures(ast);
           // console.log(`Functions in ${file}:`);
@@ -99,7 +117,7 @@ function watchDirectory(directory) {
         if (err) {
           console.error(err);
         } else {
-          enumerateJSFiles(directoryToWatch);
+          wrapInTryCatch(() => enumerateJSFiles(directory))();
           // const ast = acorn.parse(data, acornOptions);
           // const signatures = extractFunctionSignatures(ast);
           // console.log(`Functions in ${file}:`);

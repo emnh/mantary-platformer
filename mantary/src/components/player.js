@@ -87,10 +87,10 @@ export function Player(f) {
     function setupEngine() {
         registerEngineUpdate("playerUpdate", update);
         const engineLoop = function(keyAddedOrRemoved) {
-            if (lastRafTime === null) {
-                lastRafTime = performanceNow();
+            if (lastEngineTime === null) {
+                lastEngineTime = performanceNow();
             }
-            const elapsed = performanceNow() - lastRafTime;
+            const elapsed = performanceNow() - lastEngineTime;
             for (const engineName in engineCallbacks) {
                 const engineFunction = engineCallbacks[engineName];
                 engineFunction(elapsed);

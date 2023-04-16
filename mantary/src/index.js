@@ -15,7 +15,8 @@ function game(state) {
 function test(state) {
     const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
     importedFunctions.startComponents(state.components);
-    importedFunctions.runTests(tests, state);
+    const testContext = importedFunctions.testContext;
+    importedFunctions.runTests(tests, state, testContext);
 };
 
 function main(state) {
@@ -30,11 +31,9 @@ function main(state) {
 function getComponents() {
     const player = importedFunctions.player();
     const docInterface = importedFunctions.docInterface(document);
-    const testContext = importedFunctions.testContext();
     return {
         player,
-        docInterface,
-        testContext
+        docInterface
     }
 };
 

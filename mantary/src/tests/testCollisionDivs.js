@@ -1,17 +1,13 @@
-export function testCollisionDivs({ functions: f, components: c }) {
+export function testCollisionDivs(f) {
 
-    const { testContext: context } = c;
+    const { describe, it, expect } = f;
 
-    function setup() {
-        const div = document.createElement("div");
-        context.contextAppendChild(div);
-        // div.style.position = "absolute";
+    describe("Checking collision divs", function() {
+        const div = f.createElement("div");
+        f.contextAppendChild(div);
         div.style.display = "block";
-        // div.style.position = "relative";
-        // div.style.width = "auto";
-        // div.style.height = "auto";
 
-        const div1 = document.createElement("div");
+        const div1 = f.createElement("div");
         div1.style.width = "100px";
         div1.style.height = "100px";
         div1.style.backgroundColor = "red";
@@ -20,7 +16,7 @@ export function testCollisionDivs({ functions: f, components: c }) {
         div1.style.top = "50px";
         div.appendChild(div1);
 
-        const div2 = document.createElement("div");
+        const div2 = f.createElement("div");
         div2.style.width = "100px";
         div2.style.height = "100px";
         div2.style.backgroundColor = "blue";
@@ -31,15 +27,7 @@ export function testCollisionDivs({ functions: f, components: c }) {
 
         context.div1 = div1;
         context.div2 = div2;
-    }
 
-    function assertion() {
-        return f.checkCollisionDivs(context.div1, context.div2, f);
-    }
-
-    assertion.description = "Checking collision divs";
-
-    f.reportTest(setup, [assertion], {
-        ...f, ...c.docInterface, ...context
+        it("should return true when they overlap", expect(f.checkCollisionDivs(context.div1, context.div2, f).toBe(true)));
     });
 };

@@ -18,6 +18,10 @@ let worldPosition = { x: 0, y: 0 };
 let velocityY = 0;
 let jsonTextarea;
 let facing = 'right';
+let scalingTransform = '';
+let scale = 1;
+let appWidth = window.innerWidth;
+let appHeight = window.innerHeight;
 
 const images = {
   protagonist: {
@@ -116,8 +120,8 @@ const worldToProtagonist = function(worldX, worldY) {
   const height = image.height;
 
   // Get the width and height of the viewport
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportWidth = appWidth;
+  const viewportHeight = appHeight;
 
   // Calculate the center coordinates
   const centerX = (viewportWidth - width) / 2 - worldX;
@@ -137,8 +141,8 @@ const protagonistToWorld = function(protagonistX, protagonistY) {
   const height = image.height;
 
   // Get the width and height of the viewport
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportWidth = appWidth;
+  const viewportHeight = appHeight;
 
   // Calculate the center coordinates
   const centerX = protagonistX - (viewportWidth - width) / 2;
@@ -244,31 +248,37 @@ const addImage = function(imageName, x, y, draggable = true, container = appBody
 
 let ix = 0;
 let lastIx = 0;
+let lastRedraw = performance.now();
 const redrawForest = function(cx, cy) {
-  // TODO: Should be the original window.innerWidth, or we need to regen the forest on browser resize.
+  // TODO: Should be the original appWidth, or we need to regen the forest on browser resize.
+  // const wh = window.innerWidth;
   const wh = window.innerWidth;
-  ix = Math.round(cx * 2 / wh);
-  if (ix === lastIx) {
-    return;
-  }
-  lastIx = ix;
-  // console.log("Redraw forest");
-  // For each tree in the forest
-  for (let i = 0; i < forest.length; i++) {
-    const tree = forest[i];
-    // const x = tree.getBoundingClientRect().x;
-    const x = parseInt(tree.style.left);
-    let nx = x + cx;
-    if (nx < -wh) {
-      nx += 3 * wh;
-    } else if (nx > 2 * wh) {
-      nx -= 3 * wh;
-    }
-    tree.style.left = (nx - cx) + 'px';
-    // if (i == 0) {
-    //   console.log(x, nx, wh, cx);
-    // }
-    // break;
+  const inner = function() {
+    let i = 0;
+    const updateTree = function() {
+      for (let j = 0; j < 100 && i < forest.length - 1; j++) {
+        const tree = forest[i];
+        const x = parseInt(tree.style.left);
+        let nx = (x + cx);
+        if (nx < -wh) {
+          nx += 3 * wh;
+        } else if (nx > 2 * wh) {
+          nx -= 3 * wh;
+        }
+        tree.style.left = (nx - cx) + 'px';
+        i++;
+      }
+      if (i < forest.length) {
+        setTimeout(updateTree, 0);
+      } else {
+        lastRedraw = performance.now();
+      }
+    };
+    setTimeout(updateTree, 0);
+  };
+
+  if (performance.now() - lastRedraw >= 100) {
+    inner();
   }
 };
 
@@ -279,6 +289,8 @@ const centerProtagonist = function() {
   protagonistDiv.style.position = 'absolute';
   protagonistDiv.style.left = `${x}px`;
   protagonistDiv.style.top = `${y}px`;
+
+  appBody.style.transform = `translate(${worldPosition.x}px, ${0}px) ` + scalingTransform;
 
   redrawForest(worldPosition.x, worldPosition.y);
 };
@@ -337,7 +349,7 @@ const addMovementCode = function() {
       }
     }
     
-    const threshold = window.innerHeight - protagonistImage.height;
+    const threshold = appHeight - protagonistImage.height;
     if (worldPosition.y + velocityY >= threshold) {
       worldPosition.y = threshold;
       onGround = true;
@@ -433,7 +445,7 @@ const addMovementCode = function() {
       // const {x, y} = worldToProtagonist(worldPosition.x, worldPosition.y);
       const fx = fireballWorld.x;
       // console.log(bounds);
-      if (fx <= -bounds.x || fx >= -(bounds.x - window.innerWidth + fireball.width)) {
+      if (fx <= -bounds.x || fx >= -(bounds.x - appWidth + fireball.width)) {
         fireball.remove();
         fireballs.splice(i, 1);
         i--;
@@ -480,7 +492,6 @@ const addMovementCode = function() {
   
     // Update the position of the character
     // appBody.style.transform = `translate(${worldPosition.x}px, ${worldPosition.y}px)`;
-    appBody.style.transform = `translate(${worldPosition.x}px, ${0}px)`;
     centerProtagonist();
     // console.log(worldPosition);
   
@@ -498,8 +509,8 @@ const addPlatforms = function() {
     const platformInfo = rndPlatforms[Math.floor(Math.random() * rndPlatforms.length)];
     const platformWidth = platformInfo.width;
     const platformHeight = 50;
-    let platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
-    let platformTop = Math.floor(Math.random() * (window.innerHeight - platformHeight));
+    let platformLeft = Math.floor(Math.random() * (appWidth - platformWidth));
+    let platformTop = Math.floor(Math.random() * (appHeight - platformHeight));
 
     // Check if the platform overlaps with any other element
     let overlapping = true;
@@ -517,8 +528,8 @@ const addPlatforms = function() {
               const height = rect.height;
               if (platformLeft < (left + width) && (platformLeft + platformWidth) > left && platformTop < (top + height) && (platformTop + platformHeight) > top) {
                 overlapping = true;
-                platformLeft = Math.floor(Math.random() * (window.innerWidth - platformWidth));
-                platformTop = Math.floor(Math.random() * (window.innerHeight - platformHeight));
+                platformLeft = Math.floor(Math.random() * (appWidth - platformWidth));
+                platformTop = Math.floor(Math.random() * (appHeight - platformHeight));
                 break;
               }
             }
@@ -536,24 +547,26 @@ const addPlatforms = function() {
 
 const addForest = function() {
   // Add forest div
-  const forestDiv = document.createElement('div');
+  const forestDiv = document.getElementById('forest') || document.createElement('div');
+  forestDiv.innerHTML = '';
+  forest.length = [];
   forestDiv.id = 'forest';
   // forest.style.zIndex = -2;
   appBody.appendChild(forestDiv);
   forestDiv.style.opacity = 0.25;
   // forestDiv.style.position = 'absolute';
 
-  for (let x = -window.innerWidth; x < 2 * window.innerWidth; x += 100) {
-    for (let y1 = 0.0 * window.innerHeight; y1 < window.innerHeight - 100; y1 += 100) {
-      const y = y1 + 200 * Math.random();
-      const x2 = x + 100 * Math.random();
+  for (let x = -window.innerWidth; x < 2 * window.innerWidth; x += 100 * scale) {
+    for (let y1 = 0; y1 < window.innerHeight - 100 * scale; y1 += 100 * scale) {
+      const y = y1 + 200 * scale * Math.random();
+      const x2 = x + 100 * scale * Math.random();
       const div = addImage('redtree', x2, y, false, forestDiv);
       const img = div.getElementsByTagName('img')[0];
       // div.style.position = 'relative';
       img.style.pointerEvents = 'none';
       img.style.filter = `hue-rotate(${360 * Math.random()}deg)`;
-      img.style.width = Math.random() * 200 + 100 + 'px';
-      const pct = y / window.innerHeight;
+      img.style.width = Math.random() * 200 * scale + 100 * scale + 'px';
+      const pct = y / appHeight;
       // img.style.width = 200 * pct + 'px';
       div.style.top = '';
       div.style.bottom = -y + 'px';
@@ -582,12 +595,24 @@ const addForest = function() {
 };
 
 const onResize = function() {
+  
+  //console.log(appWidth, appHeight);
+  scale = Math.min(window.innerWidth / 2560, window.innerHeight / 1440);
+  appWidth = appWidth * scale;
+  appHeight = appHeight * scale;
+  // document.body.style.transform = `scale(1)`;
+  scalingTransform = `scale(${scale})`;
   document.body.width = window.innerWidth;
   document.body.height = window.innerHeight;
+  addForest();
+  // const scaleX = appWidth / 2560;
+  // const scaleY = appHeight / 1440;
+  // document.body.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`;
 };
 
 const main = function() {
   // Add resize listener
+  onResize();
   window.addEventListener('resize', onResize);
 
   for (const imageName in images) {

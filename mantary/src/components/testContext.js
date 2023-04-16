@@ -54,7 +54,6 @@ export function TestContext(testName, f) {
         state.itText = text;
         try {
             testFunc();
-            // TODO: console interface and dependency injection
             console.log(text + ":  ✓ Test passed!");
         } catch (error) {
             console.log(text + `:  ✗ Test failed: ${error.message}`);

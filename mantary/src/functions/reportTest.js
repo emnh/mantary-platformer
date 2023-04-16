@@ -11,7 +11,7 @@ export function reportTest(name, {
     // Might be different stack on different browsers.
     // const name = getTestFunctionName();
     const containerId = "#report-container-" + name;
-    console.log("Container:", containerId);
+    // console.log("Container:", containerId);
     const container = createElement("div");
     container.style.border = "1px solid black";
     // container.style.position = "relative";

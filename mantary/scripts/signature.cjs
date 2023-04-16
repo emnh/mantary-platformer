@@ -137,13 +137,34 @@ async function enumerateJSFiles(directory) {
   log("");
   log(importList.join('\n'));
   log("");
-  const stateFunctions = functionNameList.filter(x => x.path.includes('stateFunctions'));
-  for (const stateFunction of stateFunctions) {
-    log(`${stateFunction.name}.stateful = true;`);
-  }
+
+  log("const reqs = { getComponentSystemFunctionNames };");
+  const componentFunctions = functionNameList.filter(x => x.path.includes('components')).map(x => x.name);
+  const decorate = function(name, exported) {
+    if (componentFunctions.includes(name)) {
+      const cname = `${name}Component`;
+      if (exported) {
+        return `${cname} as ${name}`;
+      } else {
+        return `const ${cname} = newComponentDecorator(${name}, reqs);`;
+      }
+    }
+    return name;
+  };
+  
+  // const stateFunctions = functionNameList.filter(x => x.path.includes('stateFunctions'));
+  // for (const stateFunction of stateFunctions) {
+  //   log(`${stateFunction.name}.stateful = true;`);
+  // }
+  // log("");
+
+  // log("const components = {");
+  log(functionNameList.filter(x => componentFunctions.includes(x.name)).map(x => decorate(x.name, false)).join('\n'));
+  // log("};");
   log("");
+
   log("export {");
-  log(functionNameList.map(x => x.name).join(',\n'));
+  log(functionNameList.map(x => decorate(x.name, true)).join(',\n'));
   log("};");
   console.log(new Date().toString());
   console.log(msgs.join('\n'));

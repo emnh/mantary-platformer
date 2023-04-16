@@ -1,9 +1,9 @@
 // import './style.css';
 
 // import { checkCollisionDivs } from './src/functions/checkCollision.js';
-import { testCollision } from './src/functions/checkCollision.js';
-import { drawDivs } from './src/functions/drawDivs.js';
-import { report } from './src/functions/report.js';
+import { testCollision } from './functions/checkCollision.js';
+import { drawDivs } from './functions/drawDivs.js';
+import { report } from './functions/report.js';
 
 drawDivs();
 

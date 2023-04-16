@@ -1,4 +1,4 @@
-export const drawDivs = function () {
+export function drawDivs() {
     // Create the red div
     const redDiv = document.createElement("div");
     redDiv.style.width = "100px";

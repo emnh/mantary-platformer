@@ -46,6 +46,7 @@ function enumerateJSFiles(directory) {
     } else {
       files.forEach(file => {
         const fullPath = path.join(directory, file);
+        // console.log("Path:", fullPath);
 
         fs.stat(fullPath, (err, stats) => {
           if (err) {
@@ -82,10 +83,11 @@ function watchDirectory(directory) {
         if (err) {
           console.error(err);
         } else {
-          const ast = acorn.parse(data, acornOptions);
-          const signatures = extractFunctionSignatures(ast);
-          console.log(`Functions in ${file}:`);
-          console.log(signatures.join('\n'));
+          enumerateJSFiles(directoryToWatch);
+          // const ast = acorn.parse(data, acornOptions);
+          // const signatures = extractFunctionSignatures(ast);
+          // console.log(`Functions in ${file}:`);
+          // console.log(signatures.join('\n'));
         }
       });
     }
@@ -97,11 +99,11 @@ function watchDirectory(directory) {
         if (err) {
           console.error(err);
         } else {
-          // extractFunctionSignatures(directoryToWatch);
-          const ast = acorn.parse(data, acornOptions);
-          const signatures = extractFunctionSignatures(ast);
-          console.log(`Functions in ${file}:`);
-          console.log(signatures.join('\n'));
+          enumerateJSFiles(directoryToWatch);
+          // const ast = acorn.parse(data, acornOptions);
+          // const signatures = extractFunctionSignatures(ast);
+          // console.log(`Functions in ${file}:`);
+          // console.log(signatures.join('\n'));
         }
       });
     }

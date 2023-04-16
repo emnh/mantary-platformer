@@ -15,43 +15,102 @@ const acornOptions = {
   allowAwaitOutsideFunction: true
 };
 
-// define a function to extract function signatures from the parsed AST
+function addParentPointers(node, parent) {
+  if (!node || typeof node !== 'object') {
+    return;
+  }
+
+  Object.defineProperty(node, 'parent', {
+    value: parent,
+    enumerable: false,
+    writable: true
+  });
+
+  for (const key in node) {
+    if (Object.prototype.hasOwnProperty.call(node, key)) {
+      const child = node[key];
+      if (Array.isArray(child)) {
+        child.forEach((grandchild) => {
+          addParentPointers(grandchild, node);
+        });
+      } else {
+        addParentPointers(child, node);
+      }
+    }
+  }
+}
+
 function extractFunctionSignatures(fullPath, ast) {
   const signatures = [];
 
+  // Set parent pointers on all nodes in the AST
+  addParentPointers(ast, null);
+
   walk.simple(ast, {
     FunctionDeclaration(node) {
+      // console.log(JSON.stringify(ast));
+      // console.log(nodenode.parent.type);
+      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+        return;
+      }
       signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
     },
     ArrowFunctionExpression(node) {
+      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+        return;
+      }
       signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
     },
     FunctionExpression(node) {
       if (node.id) {
+        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+          return;
+        }
         signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
       } else {
+        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+          return;
+        }
         signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
       }
     }
+
   });
 
   return signatures;
 }
 
+// What's wrong with this function? It returns empty list.
+
 function extractFunctionImports(fullPath, ast) {
   const imports = [];
 
+  // Set parent pointers on all nodes in the AST
+  addParentPointers(ast, null);
+
   walk.simple(ast, {
     FunctionDeclaration(node) {
+      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+        return;
+      }
       imports.push(`import { ${node.id.name} } from '${fullPath}';`);
     },
     ArrowFunctionExpression(node) {
+      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+        return;
+      }
       imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
     },
     FunctionExpression(node) {
       if (node.id) {
+        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+          return;
+        }
         imports.push(`import { ${node.id.name} } from '${fullPath}';`);
       } else {
+        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
+          return;
+        }
         imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
       }
     }
@@ -154,4 +213,5 @@ function watchDirectory(directory) {
 }
 
 // call the watchDirectory function to start watching the directory
+enumerateJSFiles(directoryToWatch);
 watchDirectory(directoryToWatch);

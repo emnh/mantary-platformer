@@ -1,7 +1,7 @@
 import { fitParentToChildren } from "./fitParentToChildren";
 
 export function reportAssertion(name, id, message, success,
-    { bodyAppendChild,
+    { contextAppendChild,
         createElement,
         getElementById
     }) {
@@ -11,7 +11,7 @@ export function reportAssertion(name, id, message, success,
         reportContainer.id = id;
         reportContainer.style.border = "1px solid black";
         reportContainer.style.display = "inline-block";
-        bodyAppendChild(reportContainer);
+        contextAppendChild(reportContainer);
     }
 
     const report = createElement("div");
@@ -19,6 +19,7 @@ export function reportAssertion(name, id, message, success,
     report.style.position = "relative";
     // report.style.float = "left";
     report.style.display = "block";
+    // report.style.border = "1px solid black";
 
     const nameElement = createElement("h2");
     nameElement.style.display = "inline-block";

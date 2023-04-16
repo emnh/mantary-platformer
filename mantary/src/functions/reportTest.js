@@ -1,9 +1,6 @@
 export function reportTest(name, {
     bodyAppendChild,
-    contextAppendChild,
     createElement,
-    fitParentToChildren,
-    getElementById,
     setContainer,
 }) {
     console.log("Reporting test...");
@@ -17,23 +14,16 @@ export function reportTest(name, {
     // container.style.position = "relative";
     container.style.width = "auto";
     container.style.height = "auto";
-    container.style.padding = "10px";
+    container.style.padding = "2em";
     container.style.margin = "2em";
+    // container.style.marginBottom = "4em";
     // container.style.float = "left";
     container.style.display = "block";
     bodyAppendChild(container);
     setContainer(container);
-    container.id = containerId;    
-    const fns = {
-        bodyAppendChild,
-        contextAppendChild,
-        createElement,
-        fitParentToChildren,
-        getElementById,
-    };
+    container.id = containerId;
 
     return {
-        name,
         container,
         containerId
     };

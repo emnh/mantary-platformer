@@ -4,21 +4,23 @@ export function Draw(docInterface, player) {
 
     function setupDraw() {
         const div = docInterface.createElement("div");
-        div.width = "100px";
-        div.height = "100px";
+        div.id = "player";
+        div.style.position = "absolute";
+        div.style.width = "100px";
+        div.style.height = "100px";
         div.style.backgroundColor = "green";
         playerDiv = div;
         docInterface.bodyAppendChild(div);
     }
 
-    function draw() {
+    function updateDraw() {
         playerDiv.style.left = player.getScreenX() + "px";
         playerDiv.style.top = player.getScreenY() + "px";
     }
 
     function start() {
         setupDraw();
-        player.registerRaf(draw);
+        player.registerRaf("updateDraw", updateDraw);
     }
 
     function stop() {

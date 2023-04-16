@@ -11,7 +11,7 @@ export function Player(f) {
 
     let state = {
         gameSpeedInMSPerTick: 100,
-        moveSpeed: 0.001,
+        moveSpeed: 0.0001,
         movementVector: { x: 0, y: 0, },
         worldPosition: { x: 0, y: 0, },
         screenPosition: { x: 0, y: 0, },

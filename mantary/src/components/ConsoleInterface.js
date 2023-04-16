@@ -1,16 +1,8 @@
-export function ConsoleInterface() {
-    function() {
-        
-    }
-    let state = {};
-
-    function start() {
-
+export function ConsoleInterface(console) {
+    
+    function log(...args) {
+        console.log(...args);
     }
 
-    function stop() {
-
-    }
-
-    return { start, stop, };
+    return { log };
 }

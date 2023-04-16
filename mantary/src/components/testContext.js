@@ -74,9 +74,9 @@ export function TestContext(testName, f) {
         state.container.appendChild(state.subcontainer);
         try {
             testFunc();
-            console.log(text + ":  ✓ Test passed!");
+            f.log(text + ":  ✓ Test passed!");
         } catch (error) {
-            console.log(text + `:  ✗ Test failed: ${error.message}`);
+            f.log(text + `:  ✗ Test failed: ${error.message}`);
         }
     }
 

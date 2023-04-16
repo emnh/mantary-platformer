@@ -1,4 +1,4 @@
-export function DocInterface(doc) {
+export function DocInterface(doc, setTimeout) {
 
     function start() {
         doc.innerHTML = '';

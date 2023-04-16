@@ -29,11 +29,26 @@ function main(state) {
 }
 
 function getComponents() {
-    const player = importedFunctions.Player();
-    const docInterface = importedFunctions.DocInterface(document);
+    const consoleInterface = importedFunctions.ConsoleInterface(console);
+    const deps = {
+        performanceNow: () => performance.now(),
+        requestAnimationFrame,
+        cancelAnimationFrame,
+        clearTimeout,
+        log: consoleInterface.log,
+        ...importedFunctions
+    };
+    const docInterface = importedFunctions.DocInterface(document, setTimeout);
+    const player =
+        importedFunctions.Player(importedFunctions.mergeComponents(deps, { components: { docInterface } }));
+    const draw = importedFunctions.Draw(docInterface, player);
+    const immutableInterface = importedFunctions.ImmutableInterface();
     return {
+        draw,
         player,
-        docInterface
+        docInterface,
+        consoleInterface,
+        immutableInterface
     }
 };
 

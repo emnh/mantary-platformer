@@ -12,7 +12,8 @@ function game(state) {
 
 function runTests() {
     const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
-    importedFunctions.runTests(tests, importedFunctions);
+    const boundFunctions = importedFunctions.bindFunctions(importedFunctions);
+    importedFunctions.runTests(tests, boundFunctions);
 };
 
 function main(state) {

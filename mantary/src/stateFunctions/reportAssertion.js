@@ -1,9 +1,5 @@
-export function report(message, success) {
-  const error = new Error();  
-  const functionName = error.stack.split('\n')[2].trim().split(' ')[1];
-  const name = functionName;
-
-  let reportContainer = document.querySelector("#report-container");
+export function reportAssertion(functions, name, message, success) {
+  let reportContainer = document.querySelector("#report-container-" + name);
   if (!reportContainer) {
     reportContainer = document.createElement("div");
     reportContainer.id = "report-container";

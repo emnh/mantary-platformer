@@ -40,8 +40,11 @@ function addParentPointers(node, parent) {
   }
 }
 
-function extractFunctionSignatures(fullPath, ast) {
+function extractFunctionSignatures(fullPath2, ast) {
+  const fullPath = fullPath2.replace(/\\/g, '/').replace("src", ".");
   const signatures = [];
+  const imports = [];
+  const functionNames = [];
 
   // Set parent pointers on all nodes in the AST
   addParentPointers(ast, null);
@@ -54,51 +57,14 @@ function extractFunctionSignatures(fullPath, ast) {
         return;
       }
       signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
+      imports.push(`import { ${node.id.name} } from '${fullPath}';`);
+      functionNames.push(node.id.name);
     },
     ArrowFunctionExpression(node) {
       if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
         return;
       }
       signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
-    },
-    FunctionExpression(node) {
-      if (node.id) {
-        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
-          return;
-        }
-        signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
-      } else {
-        if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
-          return;
-        }
-        signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
-      }
-    }
-
-  });
-
-  return signatures;
-}
-
-// What's wrong with this function? It returns empty list.
-
-function extractFunctionImports(fullPath, ast) {
-  const imports = [];
-
-  // Set parent pointers on all nodes in the AST
-  addParentPointers(ast, null);
-
-  walk.simple(ast, {
-    FunctionDeclaration(node) {
-      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
-        return;
-      }
-      imports.push(`import { ${node.id.name} } from '${fullPath}';`);
-    },
-    ArrowFunctionExpression(node) {
-      if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
-        return;
-      }
       imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
     },
     FunctionExpression(node) {
@@ -106,22 +72,26 @@ function extractFunctionImports(fullPath, ast) {
         if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
           return;
         }
+        signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
         imports.push(`import { ${node.id.name} } from '${fullPath}';`);
+        functionNames.push(node.id.name);
       } else {
         if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
           return;
         }
+        signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
         imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
       }
     }
   });
 
-  return imports;
+  return { signatures, imports, functionNames };
 }
 
 async function enumerateJSFilesHelper(directory) {
   const signatureList = [];
   const importList = [];
+  const functionNameList = [];
 
   const files = await fs.promises.readdir(directory);
   for (const file of files) {
@@ -129,9 +99,10 @@ async function enumerateJSFilesHelper(directory) {
     const stats = await fs.promises.stat(fullPath);
 
     if (stats.isDirectory()) {
-      const [subListSignatures, sublistImports] = await enumerateJSFilesHelper(fullPath);
-      signatureList.push(...subListSignatures);
-      importList.push(...sublistImports);
+      const ret = await enumerateJSFilesHelper(fullPath);
+      signatureList.push(...ret.signatureList);
+      importList.push(...ret.importList);
+      functionNameList.push(...ret.functionNameList);
     } else if (path.extname(fullPath) === '.js') {
       const data = await fs.promises.readFile(fullPath, 'utf8');
       let ast = null;
@@ -142,26 +113,34 @@ async function enumerateJSFilesHelper(directory) {
         console.error(err);
         continue;
       }
-      const signatures = extractFunctionSignatures(fullPath, ast);
-      const imports = extractFunctionImports(fullPath, ast);
+      const { signatures, imports, functionNames } = extractFunctionSignatures(fullPath, ast);
       signatureList.push(...signatures);
       importList.push(...imports);
+      functionNameList.push(...functionNames);
     }
   }
-  return [signatureList, importList];
+  return { signatureList, importList, functionNameList };
 }
 
 async function enumerateJSFiles(directory) {
   console.clear();
-  const [signatures, imports] = await enumerateJSFilesHelper(directory);
-  signatures.sort();
-  imports.sort();
-  console.log('/*');
-  console.log(signatures.join('\n'));
-  console.log('*/');
-  console.log("");
-  console.log(imports.join('\n'));
-  console.log("");
+  const { signatureList, importList, functionNameList} = await enumerateJSFilesHelper(directory);
+  signatureList.sort();
+  importList.sort();
+  functionNameList.sort();
+  const msgs = [];
+  log = (msg) => msgs.push(msg);
+  log('/*');
+  log(signatureList.join('\n'));
+  log('*/');
+  log("");
+  log(importList.join('\n'));
+  log("");
+  log("export {");
+  log(functionNameList.join(',\n'));
+  log("};");
+  console.log(msgs.join('\n'));
+  fs.writeFileSync('src/imports.js', msgs.join('\n'));
 }
 
 function wrapInTryCatch(func) {

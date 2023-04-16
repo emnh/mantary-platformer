@@ -1,4 +1,4 @@
-function enumerateTestFunctions() {
+export function enumerateTestFunctions(global) {
     const testFunctions = [];
 
     for (const propName in global) {

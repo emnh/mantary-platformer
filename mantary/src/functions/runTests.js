@@ -1,4 +1,6 @@
-export function runTests() {
+export function runTests(tests) {
     console.log("Running tests...");
-    drawDivs();
+    for (const test of tests) {
+        test();
+    }
 }

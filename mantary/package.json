@@ -12,6 +12,9 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
+    "acorn": "^8.8.2",
+    "acorn-walk": "^8.2.0",
+    "chokidar": "^3.5.3",
     "interact.js": "^1.2.8"
   }
 }

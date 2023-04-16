@@ -1,7 +1,13 @@
-export function checkCollision(div1, div2) {
+import { report } from "./report";
+
+export function checkCollisionDivs(div1, div2) {
     const rect1 = div1.getBoundingClientRect();
     const rect2 = div2.getBoundingClientRect();
 
+    return checkCollisionRects(rect1, rect2);
+}
+
+export function checkCollisionRects(rect1, rect2) {
     return (
         rect1.left < rect2.right &&
         rect1.right > rect2.left &&
@@ -9,6 +15,8 @@ export function checkCollision(div1, div2) {
         rect1.bottom > rect2.top
     );
 }
+
+
 
 export function testCollision() {
     // Create two divs
@@ -30,7 +38,7 @@ export function testCollision() {
     div2.style.top = "80px";
     document.body.appendChild(div2);
 
-    return checkCollision(div1, div2);
+    report("Checking collision divs", checkCollisionDivs(div1, div2));
 };
 
 

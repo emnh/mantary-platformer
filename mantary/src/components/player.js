@@ -11,7 +11,7 @@ export function Player(f) {
 
     let state = {
         gameSpeedInMSPerTick: 10,
-        moveSpeed: 0.0001,
+        moveSpeed: 0.002,
         movementVector: { x: 0, y: 0, },
         worldPosition: { x: 0, y: 0, },
         screenPosition: { x: 0, y: 0, },
@@ -31,7 +31,7 @@ export function Player(f) {
         const { x, y } = movementVector;
         worldPosition.x += x * moveSpeed * elapsed;
         worldPosition.y += y * moveSpeed * elapsed;
-        f.log("Player", worldPosition.x, worldPosition.y);
+        // f.log("Player", worldPosition.x, worldPosition.y);
     }
 
     function registerRaf(name, raf) {

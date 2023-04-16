@@ -6,6 +6,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     });
 
     addEventListener('keyup', function (event) {
+        // console.log("keyup", event.key);
         delete keysPressed[event.key];
         updateCallback(false);
     });

@@ -58,7 +58,7 @@ function extractFunctionSignatures(fullPath2, ast) {
       }
       signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
       imports.push(`import { ${node.id.name} } from '${fullPath}';`);
-      functionNames.push(node.id.name);
+      functionNames.push({name: node.id.name, path: fullPath});
     },
     ArrowFunctionExpression(node) {
       if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
@@ -74,7 +74,7 @@ function extractFunctionSignatures(fullPath2, ast) {
         }
         signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
         imports.push(`import { ${node.id.name} } from '${fullPath}';`);
-        functionNames.push(node.id.name);
+        functionNames.push({name: node.id.name, path: fullPath});
       } else {
         if (!node.parent || node.parent.type !== 'ExportNamedDeclaration') {
           return;
@@ -127,7 +127,7 @@ async function enumerateJSFiles(directory) {
   const { signatureList, importList, functionNameList} = await enumerateJSFilesHelper(directory);
   signatureList.sort();
   importList.sort();
-  functionNameList.sort();
+  functionNameList.sort((a, b) => a.name.localeCompare(b.name));
   const msgs = [];
   log = (msg) => msgs.push(msg);
   log('/*');
@@ -137,8 +137,13 @@ async function enumerateJSFiles(directory) {
   log("");
   log(importList.join('\n'));
   log("");
+  const stateFunctions = functionNameList.filter(x => x.path.includes('stateFunctions'));
+  for (const stateFunction of stateFunctions) {
+    log(`${stateFunction.name}.stateful = true;`);
+  }
+  log("");
   log("export {");
-  log(functionNameList.join(',\n'));
+  log(functionNameList.map(x => x.name).join(',\n'));
   log("};");
   console.log(new Date().toString());
   console.log(msgs.join('\n'));

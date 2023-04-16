@@ -1,4 +1,6 @@
-export function testCollisionDivs({ functions: f, components: { testContext: context } }) {
+export function testCollisionDivs({ functions: f, components: c }) {
+
+    const { testContext: context } = c;
 
     function setup() {
         const div = document.createElement("div");
@@ -32,5 +34,7 @@ export function testCollisionDivs({ functions: f, components: { testContext: con
 
     assertion.description = "Checking collision divs";
 
-    f.reportTest(setup, [assertion]);
+    f.reportTest(setup, [assertion], {
+        ...f, ...c.docInterface, ...context
+    });
 };

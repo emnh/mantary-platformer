@@ -12,12 +12,12 @@ export function docInterface(doc) {
         return doc.innerHTML;
     }
 
-    function appendChild(element) {
+    function bodyAppendChild(element) {
         doc.body.appendChild(element);
     }
 
     return {
-        start, stop, serialize, appendChild,
+        start, stop, serialize, bodyAppendChild,
         addEventListener: (...args) => doc.addEventListener(...args),
         createElement: (...args) => doc.createElement(...args),
         getElementById: (...args) => doc.getElementById(...args),

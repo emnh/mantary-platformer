@@ -13,9 +13,9 @@ export function testContext() {
         state.container = container;
     }
 
-    function appendChild(element) {
+    function contextAppendChild(element) {
         state.container.appendChild(element);
     }
 
-    return { start, stop, setContainer, appendChild };
+    return { start, stop, setContainer, contextAppendChild };
 }

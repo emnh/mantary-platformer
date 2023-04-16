@@ -4,13 +4,15 @@ import * as importedFunctions from './imports.js';
 
 function game(state) {
     console.log("Game started");
-    const currentScript = document.getElementById('index');
     const functions = importedFunctions.enumerateFunctions(importedFunctions);
-    // Log all functions
-    console.log("Current script", document.currentScript);
     for (const func of functions) {
         console.log(func.name);
     }
+};
+
+function runTests() {
+    const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
+    importedFunctions.runTests(tests, importedFunctions);
 };
 
 function main(state) {

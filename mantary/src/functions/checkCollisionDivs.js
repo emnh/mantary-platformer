@@ -25,5 +25,9 @@ export function testCollision(options) {
     div2.style.top = "80px";
     document.body.appendChild(div2);
 
-    options.report("Checking collision divs", options.functions.checkCollisionDivs(div1, div2));
+    options.functions.report(
+        "Checking collision divs",
+        options.functions.checkCollisionDivs(
+            options.functions.checkCollisionRects,
+            div1, div2));
 };

@@ -2,11 +2,11 @@ export function testContext() {
     let state = {};
 
     function start() {
-
+        state = {};
     }
 
     function stop() {
-
+        state = {};
     }
 
     function setContainer(container) {

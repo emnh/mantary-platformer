@@ -9,6 +9,7 @@ function game(state) {
     // for (const func of functions) {
     //     console.log(func.name);
     // }
+    importedFunctions.drawDivs(state.components.docInterface);
 };
 
 function test(state) {
@@ -40,4 +41,4 @@ function getComponents() {
 const state = {};
 state.components = getComponents();
 state.functions = importedFunctions.bindFunctions(state, importedFunctions)
-importedFunctions.docReady(state, () => main(state));
+importedFunctions.docReady(() => main(state), state.components.docInterface);

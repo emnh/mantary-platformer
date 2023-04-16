@@ -1,13 +1,6 @@
-export function checkCollisionDivs({ functions: f }, div1, div2) {
-    // console.log("checkCollisionRects", f.checkCollisionRects);
-    const rect1 = div1.getBoundingClientRect();
-    const rect2 = div2.getBoundingClientRect();
-    return f.checkCollisionRects(rect1, rect2);
-}
+export function testCollisionDivs({ functions: f, components: { testContext: context } }) {
 
-export function testCollision({ functions: f, components: { testContext: context } }) {
-
-    function initialization() {
+    function setup() {
         const div = document.createElement("div");
         context.appendChild(div);
 
@@ -34,10 +27,10 @@ export function testCollision({ functions: f, components: { testContext: context
     }
 
     function assertion() {
-        return f.checkCollisionDivs(context.div1, context.div2);
+        return f.checkCollisionDivs(context.div1, context.div2, f);
     }
 
     assertion.description = "Checking collision divs";
 
-    f.reportTest(initialization, [assertion]);
+    f.reportTest(setup, [assertion]);
 };

@@ -21,5 +21,7 @@ export function docInterface(doc) {
         addEventListener: (...args) => doc.addEventListener(...args),
         createElement: (...args) => doc.createElement(...args),
         getElementById: (...args) => doc.getElementById(...args),
+        setTimeout: (...args) => setTimeout(...args),
+        getDocumentReadyState: () => doc.readyState,
     };
 }

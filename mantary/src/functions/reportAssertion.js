@@ -3,8 +3,8 @@ import { fitParentToChildren } from "./fitParentToChildren";
 export function reportAssertion(name, id, message, success,
     { bodyAppendChild,
         createElement,
-        getElementById,
-        fitParentToChildren }) {
+        getElementById
+    }) {
     let reportContainer = getElementById(id);
     if (!reportContainer) {
         reportContainer = createElement("div");

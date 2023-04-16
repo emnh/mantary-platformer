@@ -1,25 +1,11 @@
-export function runTests(tests, state, testContext) {
+export function runTests(tests, state, testContextInit) {
     console.log("Running tests...");
     for (const test of tests) {
-        state.components.testContext = testContext();
-        state.components.testContext.start();
-        let testDict = { ...state.functions };
-        // console.log(testDict);
-        for (const key in state.components) {
-            const component = state.components[key];
-            for (const componentFunctionName in component) {
-                if (state.functions.isComponentSystemFunctionName(componentFunctionName)) {
-                    continue;
-                }
-                if (componentFunctionName in testDict) {
-                    const msg = "Component function name already exists in test dictionary: ";
-                    throw new Error(msg + componentFunctionName);
-                }
-                testDict[componentFunctionName] = component[componentFunctionName];
-            }
-        }
-        console.log(testDict);
-        test(testDict);
-        state.components.testContext.stop();
+        const testDict = state.functions.mergeComponents({}, state);
+        const testContext = testContextInit(testDict);
+        testContext.start();
+        const testDict2 = state.functions.mergeComponents(testDict, { components: { testContext } });
+        test(testDict2);
+        testContext.stop();
     }
 }

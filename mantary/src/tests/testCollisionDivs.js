@@ -1,5 +1,4 @@
 export function testCollisionDivs(f) {
-
     const { describe, it, expect } = f;
 
     describe("Checking collision divs", function() {
@@ -25,9 +24,8 @@ export function testCollisionDivs(f) {
         div2.style.top = "80px";
         div.appendChild(div2);
 
-        context.div1 = div1;
-        context.div2 = div2;
-
-        it("should return true when they overlap", expect(f.checkCollisionDivs(context.div1, context.div2, f).toBe(true)));
+        it("should return true when they overlap", () => {
+            expect(f.checkCollisionDivs(div1, div2, f)).toBe(true)
+        });
     });
 };

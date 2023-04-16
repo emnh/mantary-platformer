@@ -1,11 +1,10 @@
-export function reportTest(initialization, assertions, {
+export function reportTest({
     bodyAppendChild,
     contextAppendChild,
     createElement,
     fitParentToChildren,
     getElementById,
     getTestFunctionName,
-    reportAssertion,
     setContainer,
 }) {
     console.log("Reporting test...");
@@ -25,8 +24,7 @@ export function reportTest(initialization, assertions, {
     container.style.display = "inline-block";
     bodyAppendChild(container);
     setContainer(container);
-    container.id = containerId;
-    initialization();
+    container.id = containerId;    
     const fns = {
         bodyAppendChild,
         contextAppendChild,
@@ -34,17 +32,10 @@ export function reportTest(initialization, assertions, {
         fitParentToChildren,
         getElementById,
     };
-    console.log("FNs:", fns);
-    for (const i in assertions) {
-        const assertion = assertions[i];
-        const description = assertion.description;
-        try {
-            const result = assertion();
-            reportAssertion(name, containerId, description, result, fns);
-        } catch (err) {
-            reportAssertion(name, containerId, description + ": " + err.toString(), false, fns);
-            console.error(err);
-        }
-    }
-    fitParentToChildren(container);
+
+    return {
+        name,
+        container,
+        containerId
+    };
 }

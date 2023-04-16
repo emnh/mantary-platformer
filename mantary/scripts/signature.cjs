@@ -16,21 +16,21 @@ const acornOptions = {
 };
 
 // define a function to extract function signatures from the parsed AST
-function extractFunctionSignatures(ast) {
+function extractFunctionSignatures(fullPath, ast) {
   const signatures = [];
 
   walk.simple(ast, {
     FunctionDeclaration(node) {
-      signatures.push(`function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
+      signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
     },
     ArrowFunctionExpression(node) {
-      signatures.push(`(${node.params.map(p => p.name).join(', ')}) =>`);
+      signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
     },
     FunctionExpression(node) {
       if (node.id) {
-        signatures.push(`function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
+        signatures.push(`${fullPath}: function ${node.id.name}(${node.params.map(p => p.name).join(', ')})`);
       } else {
-        signatures.push(`(${node.params.map(p => p.name).join(', ')}) =>`);
+        signatures.push(`${fullPath}: (${node.params.map(p => p.name).join(', ')}) =>`);
       }
     }
   });
@@ -38,50 +38,75 @@ function extractFunctionSignatures(ast) {
   return signatures;
 }
 
-// define the function to recursively enumerate all .js files in the directory and its subdirectories
-function enumerateJSFiles(directory) {
-  fs.readdir(directory, (err, files) => {
-    if (err) {
-      console.error(err);
-    } else {
-      files.forEach(file => {
-        const fullPath = path.join(directory, file);
-        // console.log("Path:", fullPath);
+function extractFunctionImports(fullPath, ast) {
+  const imports = [];
 
-        fs.stat(fullPath, (err, stats) => {
-          if (err) {
-            console.error(err);
-          } else {
-            if (stats.isDirectory()) {
-              enumerateJSFiles(fullPath);
-            } else if (path.extname(fullPath) === '.js') {
-              fs.readFile(fullPath, 'utf8', (err, data) => {
-                if (err) {
-                  console.error(err);
-                } else {
-                  let ast = null;
-                  try {
-                    ast = acorn.parse(data, acornOptions);
-                  } catch (err) {
-                    console.error("Error parsing file:", fullPath);
-                    console.error(err);
-                    return;
-                  }
-                  const signatures = extractFunctionSignatures(ast);
-                  console.log(`Functions in ${fullPath}:`);
-                  console.log(signatures.join('\n'));
-                }
-              });
-            }
-          }
-        });
-      });
+  walk.simple(ast, {
+    FunctionDeclaration(node) {
+      imports.push(`import { ${node.id.name} } from '${fullPath}';`);
+    },
+    ArrowFunctionExpression(node) {
+      imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
+    },
+    FunctionExpression(node) {
+      if (node.id) {
+        imports.push(`import { ${node.id.name} } from '${fullPath}';`);
+      } else {
+        imports.push(`const func = (${node.params.map(p => p.name).join(', ')}) =>`);
+      }
     }
   });
+
+  return imports;
+}
+
+async function enumerateJSFilesHelper(directory) {
+  const signatureList = [];
+  const importList = [];
+
+  const files = await fs.promises.readdir(directory);
+  for (const file of files) {
+    const fullPath = path.join(directory, file);
+    const stats = await fs.promises.stat(fullPath);
+
+    if (stats.isDirectory()) {
+      const [subListSignatures, sublistImports] = await enumerateJSFilesHelper(fullPath);
+      signatureList.push(...subListSignatures);
+      importList.push(...sublistImports);
+    } else if (path.extname(fullPath) === '.js') {
+      const data = await fs.promises.readFile(fullPath, 'utf8');
+      let ast = null;
+      try {
+        ast = acorn.parse(data, acornOptions);
+      } catch (err) {
+        console.error("Error parsing file:", fullPath);
+        console.error(err);
+        continue;
+      }
+      const signatures = extractFunctionSignatures(fullPath, ast);
+      const imports = extractFunctionImports(fullPath, ast);
+      signatureList.push(...signatures);
+      importList.push(...imports);
+    }
+  }
+  return [signatureList, importList];
+}
+
+async function enumerateJSFiles(directory) {
+  console.clear();
+  const [signatures, imports] = await enumerateJSFilesHelper(directory);
+  signatures.sort();
+  imports.sort();
+  console.log('/*');
+  console.log(signatures.join('\n'));
+  console.log('*/');
+  console.log("");
+  console.log(imports.join('\n'));
+  console.log("");
 }
 
 function wrapInTryCatch(func) {
-  return function() {
+  return function () {
     try {
       return func.apply(this, arguments);
     } catch (err) {

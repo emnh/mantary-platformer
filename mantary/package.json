@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "signature": "nodemon ./scripts/signature.cjs"
   },
   "devDependencies": {
     "vite": "^4.2.0"
@@ -15,6 +16,7 @@
     "acorn": "^8.8.2",
     "acorn-walk": "^8.2.0",
     "chokidar": "^3.5.3",
-    "interact.js": "^1.2.8"
+    "interact.js": "^1.2.8",
+    "nodemon": "^2.0.22"
   }
 }

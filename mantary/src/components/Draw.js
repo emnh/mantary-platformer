@@ -286,7 +286,7 @@ export function Draw(f) {
     function fullscreen() {
         let firstFS = true;
 
-        addEventListener('keydown', function (event) {
+        const handler = function (event) {
             if ('fwasdWASD'.includes(event.key) ||
                 ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)
                 ) {
@@ -295,7 +295,10 @@ export function Draw(f) {
                     firstFS = false;
                 }
             }
-        });
+        };
+        
+        addEventListener('keydown', handler);
+        addEventListener('touchstart', handler);
     }
 
     function start() {

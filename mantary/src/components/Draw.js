@@ -8,6 +8,7 @@ import platformImg3Src from '../../images/platform3.png';
 import platformImg4Src from '../../images/platform4.png';
 import platformImg5Src from '../../images/platform5.png';
 import platformImg6Src from '../../images/platform6.png';
+import coinImgSrc from '../../images/coin.png';
 
 const smallPlatformSrcs = [
     platformImg2Src,
@@ -41,6 +42,9 @@ export function Draw(f) {
         getVelocityX,
         // getVelocityY,
         getPlatforms,
+        getCoins,
+        registerConsumeCoinCallback,
+        performanceNow
     } = f;
 
     const borderSize = 5;
@@ -53,6 +57,8 @@ export function Draw(f) {
     let platformDivs = [];
     let platforms = [];
     let levelDiv = null;
+    let coins = [];
+    let coinDivs = [];
 
     // TODO: Refactor to make it a pure function.
     function drawGrid(canvas, width, height, gridSize) {
@@ -88,7 +94,7 @@ export function Draw(f) {
             div.style.top = platform.y + "px";
             div.style.width = platform.width + "px";
             div.style.height = platform.height + "px";
-            div.style.backgroundColor = "black";
+            // div.style.backgroundColor = "black";
             const img = createElement("img");
             if (platform.width / platform.height > 2.0) {
                 img.src = longPlatformSrcs[Math.floor(Math.random() * longPlatformSrcs.length)];
@@ -102,6 +108,33 @@ export function Draw(f) {
             div.appendChild(img);
             levelDiv.appendChild(div);
             platformDivs.push(div);
+        });
+    }
+
+    function drawCoins() {
+        updateScale();
+        coins = getCoins();        
+        // Create a div for each platform.
+        coins.forEach((coin) => {
+            const div = createElement("div");
+            div.style.position = "absolute";
+            div.style.left = coin.x + "px";
+            div.style.top = coin.y + "px";
+            div.style.width = coin.width + "px";
+            div.style.height = coin.height + "px";
+            // div.style.backgroundColor = "black";
+            const img = createElement("img");
+            img.src = coinImgSrc;
+            img.style.width = "100%";
+            img.style.position = "absolute";
+            div.appendChild(img);
+            levelDiv.appendChild(div);
+            coinDivs.push(div);
+        });
+        
+        registerConsumeCoinCallback((index) => {
+            coinDivs[index].style.display = "none";
+            coinDivs.splice(index, 1);
         });
     }
 
@@ -122,6 +155,7 @@ export function Draw(f) {
         levelDiv.appendChild(canvas);
 
         drawPlatforms();
+        drawCoins();
 
         const div = createElement("div");
         div.id = "player";
@@ -194,6 +228,14 @@ export function Draw(f) {
 
         levelDiv.style.left = -worldScreenX + "px";
         levelDiv.style.transform = "scale(" + scale + ")";
+
+        coinDivs.forEach((div) => {
+            const width = 10.0 * (Math.sin(10.0 * performanceNow() * 0.001) + 1.0) * 0.5;
+            const img = div.getElementsByTagName("img")[0];
+            img.style.top = width + '%';
+            // img.style.left = (50 - width) + '%';
+            // img.style.width = width + '%';
+        });
     }
 
     function start() {

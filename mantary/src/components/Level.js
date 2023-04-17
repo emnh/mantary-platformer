@@ -6,8 +6,29 @@ export function Level() {
         { x: 800, y: 600, width: 200, height: 50 },
     ];
 
+    let coins = [
+        { x: 375, y: 750, width: 50, height: 50 },
+        { x: 625, y: 750, width: 50, height: 50 },
+        { x: 875, y: 550, width: 50, height: 50 },
+    ];
+
+    let consumeCoinCallbacks = [];
+
     function getPlatforms() {
         return platforms;
+    }
+
+    function getCoins() {
+        return coins;
+    }
+
+    function registerConsumeCoinCallback(fn) {
+        consumeCoinCallbacks.push(fn);
+    }
+
+    function consumeCoin(index) {
+        coins.splice(index, 1);
+        consumeCoinCallbacks.forEach(fn => fn(index));
     }
 
     function getPlayerSize() {
@@ -44,6 +65,9 @@ export function Level() {
         getStartingPosition,
         getLevelViewBoundingBox,
         getWorldBoundingBox,
-        getPlatforms
+        getPlatforms,
+        getCoins,
+        consumeCoin,
+        registerConsumeCoinCallback
     };
 };

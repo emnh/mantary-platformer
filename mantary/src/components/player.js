@@ -13,11 +13,14 @@ export function Player(f) {
         getStartingPosition,
         getPlayerSize,
         getGravity,
-        getPlatforms
+        getPlatforms,
+        getCoins,
+        consumeCoin
     } = f;
 
     let state = {
         tickCount: 0,
+        coinCount: 0,
         gameSpeedInMSPerTick: 10,
         moveSpeed: 0.4,
         jumpSpeed: 0.008,
@@ -96,6 +99,23 @@ export function Player(f) {
         }
     }
 
+    function checkCoinCollisions() {
+        const coins = getCoins();
+
+        for (let i = 0; i < coins.length; i++) {
+            const coin = coins[i];
+            const {x, y} = state.worldPosition;
+            const { width, height } = state.size;
+            const player = { x, y, width, height };
+            if (checkCollisionRectsXYWH(player, coin, f)) {
+                state.coinCount++;
+                f.log("Coin count: ", state.coinCount);
+                consumeCoin(i);
+                break;
+            }
+        }
+    }
+
     function isJumping() {
         return state.jumpStart !== null && state.tickCount - state.jumpStart < 20;
     }
@@ -118,6 +138,7 @@ export function Player(f) {
 
         checkBounds();
         checkCollisions();
+        checkCoinCollisions();
         // f.log("Player", worldPosition.x, worldPosition.y);
     }
 

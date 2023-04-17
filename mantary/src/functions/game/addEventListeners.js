@@ -2,12 +2,17 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     addEventListener('keydown', function (event) {
         keysPressed[event.key] = true;
         updateCallback(true);
-        // console.log(event.key);
     });
 
     addEventListener('keyup', function (event) {
-        // console.log("keyup", event.key);
         delete keysPressed[event.key];
         updateCallback(false);
     });
+
+    // addEventListener('focusout', function (event) {
+    //     for (const key in keysPressed) {
+    //         delete keysPressed[key];
+    //     }
+    //     updateCallback(false);
+    // });
 }

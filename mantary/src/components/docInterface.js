@@ -24,7 +24,7 @@ export function DocInterface(window, doc, setTimeout) {
 
     return {
         start, stop, serialize, bodyAppendChild, initBodyStyle,
-        addEventListener: (...args) => doc.addEventListener(...args),
+        addEventListener: (...args) => window.addEventListener(...args),
         createElement: (...args) => doc.createElement(...args),
         getElementById: (...args) => doc.getElementById(...args),
         setTimeout: (...args) => setTimeout(...args),

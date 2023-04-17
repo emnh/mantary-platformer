@@ -10,6 +10,12 @@ export function Level() {
         { x: 375, y: 750, width: 50, height: 50 },
         { x: 625, y: 750, width: 50, height: 50 },
         { x: 875, y: 550, width: 50, height: 50 },
+        { x: 1050, y: 550, width: 50, height: 50 },
+        { x: 1050, y: 625, width: 50, height: 50 },
+        { x: 1050, y: 675, width: 50, height: 50 },
+        { x: 1050, y: 725, width: 50, height: 50 },
+        { x: 1050, y: 775, width: 50, height: 50 },
+        { x: 1050, y: 825, width: 50, height: 50 },
     ];
 
     let consumeCoinCallbacks = [];

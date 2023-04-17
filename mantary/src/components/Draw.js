@@ -118,19 +118,36 @@ export function Draw(f) {
         const height = getWindowInnerHeight();
         const div = createElement("div");
         div.style.position = "fixed";
-        div.style.left = width - 200 + "px";
-        div.style.top = "200px";
-        div.style.width = "5%";
-        div.style.height = "5%";
+        // div.style.left = width - 200 + "px";
+        div.style.right = "0px";
+        div.style.left = "0px;"
+        div.style.top = "2vh";
+        div.style.width = "auto";
+        div.style.height = "3vh";
         const span = createElement("span");
-        div.appendChild(span);
+        // span.style.position = "absolute";
+        // span.style.marginTop = "50%";
+
+        span.style.right = "0px";
+        span.style.paddingLeft = "10%";
+        // div.style.marginRight = "-10%";
+        // span.style.fontSize = "3vh";
+        span.style.fontSize = "400%";
+        // span.style.position = "absolute";
+        // span.style.float = "right";
+        span.style.display = "inline-block";
+        
         coinStatusCountElement = span;
         // div.style.backgroundColor = "black";
         const img = createElement("img");
         img.src = coinImgSrc;
-        img.style.width = "100%";
-        img.style.position = "absolute";
+        // img.style.width = "3vh";
+        img.style.width = "25%";
+        // img.style.float = "right";
+        img.style.display = "inline-block";
+        // img.style.position = "relative";
         div.appendChild(img);
+        div.appendChild(span);
 
         bodyAppendChild(div);
     };

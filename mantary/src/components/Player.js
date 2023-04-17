@@ -184,7 +184,10 @@ export function Player(f) {
             moveLeft,
             moveRight,
             moveUp,
-            moveDown
+            moveDown,
+            swipeLeft,
+            swipeRight,
+            tap
         });
         const inputHandler = function(keyPressedOrReleased) {
             handleKeyBindings(keyBindings, keysPressed, lastKeysPressed);

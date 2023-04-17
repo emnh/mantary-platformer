@@ -28,8 +28,11 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     addEventListener('touchend', handleTouchEnd);
 
     // Define touch event handler functions
+    let swiping = false;
+
     function handleTouchStart(event) {
         event.preventDefault();
+        swiping = false;
         touchStartX = event.touches[0].clientX;
         touchStartY = event.touches[0].clientY;
     }
@@ -68,8 +71,8 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     function handleHold() {
         const x = touchEndX || touchStartX;
         const y = touchEndY || touchStartY;
-        
-        if (x !== null) {
+
+        if (x !== null && !swiping) {
             if (x < window.innerWidth / 3) {
                 swipeLeft();
             } else if (x > 2 * window.innerWidth / 3) {
@@ -77,7 +80,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             }
         }
 
-        if (y !== null) {
+        if (y !== null && !swiping) {
             if (y < window.innerHeight / 3) {
                 jump();
             }
@@ -96,8 +99,10 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
             if (touchDiffX > moveThreshold) {
+                swiping = true;
                 swipeRight();
             } else if (touchDiffX < -moveThreshold) {
+                swiping = true;
                 swipeLeft();
             }
         }
@@ -105,6 +110,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         if (touchStartY && touchEndY) {
             const touchDiffY = touchEndY - touchStartY;
             if (touchDiffY < -moveThreshold) {
+                swiping = true;
                 jump();
             }
         }

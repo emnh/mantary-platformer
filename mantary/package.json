@@ -16,6 +16,7 @@
     "acorn": "^8.8.2",
     "acorn-walk": "^8.2.0",
     "chokidar": "^3.5.3",
+    "howler": "^2.2.3",
     "immutable": "^4.3.0",
     "interact.js": "^1.2.8",
     "nodemon": "^2.0.22"

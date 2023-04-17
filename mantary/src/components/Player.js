@@ -229,6 +229,21 @@ export function Player(f) {
     }
 
     // TODO: refactor
+    function swipeLeft(keyPressed) {
+        moveLeft(keyPressed);
+        // setTimeout(() => moveLeft(false), 100);
+    }
+
+    function swipeRight(keyPressed) {
+        moveRight(keyPressed);
+        // setTimeout(() => moveRight(false), 100);
+    }
+
+    function tap(keyPressed) {
+        moveUp(keysPressed);
+        // setTimeout(() => moveUp(false), 100);
+    }
+
     function moveLeft(keyPressed) {
         state.velocity.x = keyPressed ? -state.moveSpeed : 0;
         state.facing = 'left';

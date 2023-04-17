@@ -109,7 +109,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
 
         if (touchStartY && touchEndY) {
             const touchDiffY = touchEndY - touchStartY;
-            if (touchDiffY < -moveThreshold) {
+            if (touchDiffY < -3 * moveThreshold) {
                 swiping = true;
                 jump();
             }

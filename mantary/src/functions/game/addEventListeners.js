@@ -47,7 +47,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
                 setTimeout(() => {
                     delete keysPressed["swipeRight"];
                     updateCallback(false);
-                }, 100);
+                }, 500);
             } else if (touchDiffX < 0) {
                 // Swipe left
                 keysPressed["swipeLeft"] = true;
@@ -56,7 +56,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
                 setTimeout(() => {
                     delete keysPressed["swipeLeft"];
                     updateCallback(false);
-                }, 100);
+                }, 500);
             }
             // Reset touch variables
             touchStartX = null;

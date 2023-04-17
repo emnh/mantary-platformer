@@ -39,9 +39,44 @@ function getComponents() {
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     const musicEnabled = urlParams.has('music');
     const fullscreenEnabled = urlParams.has('fullscreen');
+    const fireworksEnabled = urlParams.has('shaderbg');
     console.log("Music enabled (Add /#music to URL): ", musicEnabled);
     console.log("Fullscreen enabled (Add /#fullscreen to URL): ", fullscreenEnabled);
+    console.log("Fireworks enabled (Add /#fireworks to URL): ", fireworksEnabled);
     console.log("To enable go to: ", window.location.href.replace(location.hash,"") + "#music&fullscreen");
+
+    if (fireworksEnabled) {
+        let shader = null;
+        if (urlParams.has('shaderbg')) {
+            const shaderbg = urlParams.get('shaderbg');
+            if (shaderbg.length > 0) {
+                shader = shaderbg;
+            } else {
+                const shaders = [
+                    'lscGRl', // fireworks
+                    'fsX3zB', // matrix rain
+                    'ltfGD7', // windwaker ocean
+                    'msjGzw', // walk like an egyptian
+                    '3dcyzS', // raymarching pebbles
+                    '3tXBWj', // perlin hills (best background for the game I guess)
+                ];
+                shader = shaders[Math.floor(shaders.length * Math.random())];
+            }
+            console.log("Shader: ", shader);
+        }
+        
+        if (shader != null) {
+            const bg = document.body.getElementsByClassName("background")[0];
+            document.body.style.color = "transparent";
+            bg.innerHTML = 
+                `<iframe
+                    allowtransparence="true" width="640" height="360"
+                    frameborder="0" src="https://www.shadertoy.com/embed/${shader}?gui=false&t=10&paused=false&muted=true"
+                    frameborder="0" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%">
+                    </iframe>`;
+        }
+        
+    }
     
     const level = system.Level();
     const docInterface = system.DocInterface(window, document, setTimeout);

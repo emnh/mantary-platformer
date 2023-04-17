@@ -137,7 +137,7 @@ export function Draw(f, fullscreenEnabled) {
         // span.style.position = "absolute";
         // span.style.float = "right";
         span.style.display = "inline-block";
-        span.style.fontColor = "white";
+        span.style.color = "white";
         
         coinStatusCountElement = span;
         // div.style.backgroundColor = "black";

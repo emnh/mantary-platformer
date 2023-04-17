@@ -118,15 +118,15 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
                 swipeLeft();
             }
             // Reset touch variables
-            touchStartX = null;
-            touchEndX = null;
         } else {
             //jump();
         }
-        if (touchStartY && touchEndY) {
-            touchStartY = null;
-            touchEndY = null;
-        }
+        // if (touchStartY && touchEndY) {
+        touchStartX = null;
+        touchEndX = null;
+        touchStartY = null;
+        touchEndY = null;
+        // }
     }
 
     function handleTouchHold() {

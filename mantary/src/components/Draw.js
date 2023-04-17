@@ -22,7 +22,8 @@ export function Draw(f) {
         getFacing,
         isOnGround,
         getVelocityX,
-        getVelocityY,
+        // getVelocityY,
+        getPlatforms,
     } = f;
 
     const borderSize = 5;
@@ -32,6 +33,9 @@ export function Draw(f) {
     let scale = 1;
     let canvas = null;
     let lastState = null;
+    let platformDivs = [];
+    let platforms = [];
+    let levelDiv = null;
 
     // TODO: Refactor to make it a pure function.
     function drawGrid(canvas, width, height, gridSize) {
@@ -56,6 +60,23 @@ export function Draw(f) {
         }
     }
 
+    function drawPlatforms() {
+        updateScale();
+        platforms = getPlatforms();        
+        // Create a div for each platform.
+        platforms.forEach((platform) => {
+            const div = createElement("div");
+            div.style.position = "absolute";
+            div.style.left = platform.x * scale + "px";
+            div.style.top = platform.y * scale + "px";
+            div.style.width = platform.width * scale + "px";
+            div.style.height = platform.height * scale + "px";
+            div.style.backgroundColor = "black";
+            levelDiv.appendChild(div);
+            platformDivs.push(div);
+        });
+    }
+
     function setupDraw() {
         initBodyStyle();
 
@@ -63,9 +84,16 @@ export function Draw(f) {
         boundary.style.border = borderSize + "px solid black";
         boundary.style.position = "absolute";
         bodyAppendChild(boundary);
+        
+        levelDiv = createElement('div');
+        levelDiv.style.position = 'absolute';
+        bodyAppendChild(levelDiv);
 
         canvas = createElement("canvas");
-        bodyAppendChild(canvas);
+        canvas.style.position = 'absolute';
+        levelDiv.appendChild(canvas);
+
+        drawPlatforms();
 
         const div = createElement("div");
         div.id = "player";
@@ -79,7 +107,7 @@ export function Draw(f) {
         bodyAppendChild(div);
     }
 
-    function updateDraw() {
+    function updateScale() {
         const innerWidth = getWindowInnerWidth() - 2 * borderSize;
         const innerHeight = getWindowInnerHeight() - 2 * borderSize;
         boundary.style.width = innerWidth + "px";
@@ -88,8 +116,11 @@ export function Draw(f) {
         const windowBBox = getLevelViewBoundingBox();
         const screenWidth = windowBBox.width;
         const screenHeight = windowBBox.height;
-
         scale = Math.min(innerWidth / screenWidth, innerHeight / screenHeight);
+    }
+
+    function updateDraw() {
+        updateScale();
         
         const playerWidth = getPlayerWidth() * scale;
         const playerHeight = getPlayerHeight() * scale;
@@ -127,13 +158,13 @@ export function Draw(f) {
         // getWorldX()
 
         drawGrid(canvas, innerWidth, innerHeight, 40 * scale);
-        canvas.style.left = -worldScreenX + "px";
-        canvas.style.position = 'absolute';
 
         playerDiv.style.left = playerScreenX + "px";
         playerDiv.style.top = y + "px";
         playerDiv.style.width = playerWidth + "px";
         playerDiv.style.height = playerHeight + "px";
+
+        levelDiv.style.left = -worldScreenX + "px";
     }
 
     function start() {

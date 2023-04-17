@@ -16,6 +16,10 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     //     updateCallback(false);
     // });
 
+    // Define variables for touch controls
+    let touchStartX = null;
+    let touchEndX = null;
+
     addEventListener('touchstart', handleTouchStart);
     addEventListener('touchend', handleTouchEnd);
 

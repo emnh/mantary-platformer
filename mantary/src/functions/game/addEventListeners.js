@@ -91,18 +91,20 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             touchEndY = event.touches[0].clientY;
         }
 
+        const moveThreshold = window.innerWidth * 0.1;
+
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
-            if (touchDiffX > 0) {
+            if (touchDiffX > moveThreshold) {
                 swipeRight();
-            } else if (touchDiffX < 0) {
+            } else if (touchDiffX < -moveThreshold) {
                 swipeLeft();
             }
         }
 
         if (touchStartY && touchEndY) {
             const touchDiffY = touchEndY - touchStartY;
-            if (touchDiffY < -100) {
+            if (touchDiffY < -moveThreshold) {
                 jump();
             }
         }
@@ -110,10 +112,17 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
 
     function handleTouchEnd(event) {
         event.preventDefault();
+        
+        if (event !== undefined) {
+            event.preventDefault();
+            touchEndX = event.touches[0].clientX;
+            touchEndY = event.touches[0].clientY;
+        }
+
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
             if (touchDiffX > 0) {
-                swipeRight
+                swipeRight();
             } else if (touchDiffX < 0) {
                 swipeLeft();
             }

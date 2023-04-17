@@ -2,6 +2,23 @@ import protagonistImgSrc from '../../images/protagonist.png';
 import protagonistWalkImgSrc from '../../images/walk.webp';
 import protagonistJumpImgSrc from '../../images/jump.gif';
 
+import platformImg1Src from '../../images/platform1.png';
+import platformImg2Src from '../../images/platform2.png';
+import platformImg3Src from '../../images/platform3.png';
+import platformImg4Src from '../../images/platform4.png';
+import platformImg5Src from '../../images/platform5.png';
+import platformImg6Src from '../../images/platform6.png';
+
+const smallPlatformSrcs = [
+    platformImg2Src,
+    platformImg3Src,
+    platformImg4Src,
+];
+const longPlatformSrcs = [
+    platformImg5Src,
+    platformImg6Src,
+];
+
 export function Draw(f) {
 
     const {
@@ -67,11 +84,22 @@ export function Draw(f) {
         platforms.forEach((platform) => {
             const div = createElement("div");
             div.style.position = "absolute";
-            div.style.left = platform.x * scale + "px";
-            div.style.top = platform.y * scale + "px";
-            div.style.width = platform.width * scale + "px";
-            div.style.height = platform.height * scale + "px";
+            div.style.left = platform.x + "px";
+            div.style.top = platform.y + "px";
+            div.style.width = platform.width + "px";
+            div.style.height = platform.height + "px";
             div.style.backgroundColor = "black";
+            const img = createElement("img");
+            if (platform.width / platform.height > 2.0) {
+                img.src = longPlatformSrcs[Math.floor(Math.random() * longPlatformSrcs.length)];
+                img.style.top = -platform.height * 0.75 + "px";
+            } else {
+                img.src = smallPlatformSrcs[Math.floor(Math.random() * smallPlatformSrcs.length)];
+                img.style.top = -platform.height * 0.5 + "px";
+            }
+            img.style.width = "100%";
+            img.style.position = "absolute";
+            div.appendChild(img);
             levelDiv.appendChild(div);
             platformDivs.push(div);
         });
@@ -153,8 +181,8 @@ export function Draw(f) {
         const x = getWorldX() * scale;
         const y = getWorldY() * scale;
         const centerX = innerWidth / 2;
-        const playerScreenX = x * scale < centerX ? x * scale : centerX;
-        const worldScreenX = x * scale < centerX ? 0 : x * scale - centerX;
+        const playerScreenX = x < centerX ? x : centerX;
+        const worldScreenX = x < centerX ? 0 : x - centerX;
         // getWorldX()
 
         drawGrid(canvas, innerWidth, innerHeight, 40 * scale);
@@ -165,6 +193,7 @@ export function Draw(f) {
         playerDiv.style.height = playerHeight + "px";
 
         levelDiv.style.left = -worldScreenX + "px";
+        levelDiv.style.transform = "scale(" + scale + ")";
     }
 
     function start() {

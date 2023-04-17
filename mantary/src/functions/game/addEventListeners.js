@@ -34,6 +34,56 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         touchStartY = event.touches[0].clientY;
     }
 
+    function swipeLeft() {
+        // Swipe left
+        keysPressed["swipeLeft"] = true;
+        updateCallback(true);
+
+        setTimeout(() => {
+            delete keysPressed["swipeLeft"];
+            updateCallback(false);
+        }, 500);
+    }
+
+    function swipeRight() {
+        // Swipe right
+        keysPressed["swipeRight"] = true;
+        updateCallback(true);
+
+        setTimeout(() => {
+            delete keysPressed["swipeRight"];
+            updateCallback(false);
+        }, 500);
+    }
+
+    function jump() {
+        keysPressed["tap"] = true;
+        updateCallback(true);
+        setTimeout(() => {
+            delete keysPressed["tap"];
+            updateCallback(false);
+        }, 100);
+    };
+
+    function handleHold() {
+        const x = touchEndX || touchStartX;
+        const y = touchEndY || touchStartY;
+        
+        if (x !== null) {
+            if (x < window.innerWidth / 3) {
+                swipeLeft();
+            } else if (x > 2 * window.innerWidth / 3) {
+                swipeRight();
+            }
+        }
+
+        if (y !== null) {
+            if (y < window.innerHeight / 3) {
+                jump();
+            }
+        }
+    };
+
     function handleTouchMove(event) {
         if (event !== undefined) {
             event.preventDefault();
@@ -44,38 +94,16 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
             if (touchDiffX > 0) {
-                // Swipe right
-                keysPressed["swipeRight"] = true;
-                updateCallback(true);
-
-                setTimeout(() => {
-                    delete keysPressed["swipeRight"];
-                    updateCallback(false);
-                }, 500);
+                swipeRight();
             } else if (touchDiffX < 0) {
-                // Swipe left
-                keysPressed["swipeLeft"] = true;
-                updateCallback(true);
-
-                setTimeout(() => {
-                    delete keysPressed["swipeLeft"];
-                    updateCallback(false);
-                }, 500);
+                swipeLeft();
             }
-            // Reset touch variables
-            // touchStartX = null;
-            // touchEndX = null;
         }
 
         if (touchStartY && touchEndY) {
             const touchDiffY = touchEndY - touchStartY;
             if (touchDiffY < -100) {
-                keysPressed["tap"] = true;
-                updateCallback(true);
-                setTimeout(() => {
-                    delete keysPressed["tap"];
-                    updateCallback(false);
-                }, 100);
+                jump();
             }
         }
     }
@@ -85,35 +113,15 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
             if (touchDiffX > 0) {
-                // Swipe right
-                keysPressed["swipeRight"] = true;
-                updateCallback(true);
-
-                setTimeout(() => {
-                    delete keysPressed["swipeRight"];
-                    updateCallback(false);
-                }, 500);
+                swipeRight
             } else if (touchDiffX < 0) {
-                // Swipe left
-                keysPressed["swipeLeft"] = true;
-                updateCallback(true);
-
-                setTimeout(() => {
-                    delete keysPressed["swipeLeft"];
-                    updateCallback(false);
-                }, 500);
+                swipeLeft();
             }
             // Reset touch variables
             touchStartX = null;
             touchEndX = null;
         } else {
-            // Single tap (jump)
-            // keysPressed["tap"] = true;
-            // updateCallback(true);
-            // setTimeout(() => {
-            //     delete keysPressed["tap"];
-            //     updateCallback(false);
-            // }, 100);
+            //jump();
         }
         if (touchStartY && touchEndY) {
             touchStartY = null;
@@ -122,7 +130,8 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     }
 
     function handleTouchHold() {
-        handleTouchMove();
+        handleHold();
+        // handleTouchMove();
     }
 
     setInterval(handleTouchHold, 10);

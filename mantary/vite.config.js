@@ -1,6 +1,7 @@
 // vite.config.js
 
 export default {
+    base: '',
     rollupOptions: {
         output: {
             sourcemapPathTransform: (sourcePath, relativePath) => {

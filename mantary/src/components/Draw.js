@@ -263,7 +263,7 @@ export function Draw(f) {
         const worldScreenX = x < centerX ? 0 : x - centerX;
         // getWorldX()
 
-        drawGrid(canvas, innerWidth, innerHeight, 40 * scale);
+        // drawGrid(canvas, innerWidth, innerHeight, 40 * scale);
 
         playerDiv.style.left = playerScreenX + "px";
         playerDiv.style.top = y + "px";

@@ -21,14 +21,22 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     let touchEndX = null;
 
     addEventListener('touchstart', handleTouchStart);
+    addEventListener('touchmove', handleTouchMove);
     addEventListener('touchend', handleTouchEnd);
 
     // Define touch event handler functions
     function handleTouchStart(event) {
+        event.preventDefault();
         touchStartX = event.touches[0].clientX;
     }
 
+    function handleTouchMove(event) {
+        event.preventDefault();
+        touchEndX = event.touches[0].clientX;
+    }
+
     function handleTouchEnd(event) {
+        event.preventDefault();
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
             if (touchDiffX > 0) {

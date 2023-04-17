@@ -66,7 +66,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
         }
 
         const touchDiffY = touchEndY - touchStartY;
-        if (touchDiffY < -50) {
+        if (touchDiffY < 0) {
             keysPressed["tap"] = true;
             updateCallback(true);
             setTimeout(() => {

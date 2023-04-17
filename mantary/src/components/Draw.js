@@ -86,10 +86,11 @@ export function Draw(f) {
         const y = getWorldY() * scale;
         const centerX = innerWidth / 2;
         const playerScreenX = x * scale < centerX ? x * scale : centerX;
+        const worldScreenX = x * scale < centerX ? 0 : x * scale - centerX;
         // getWorldX()
 
         drawGrid(canvas, innerWidth, innerHeight, 40 * scale);
-        canvas.style.left = -getWorldX() + "px";
+        canvas.style.left = -worldScreenX + "px";
         canvas.style.position = 'absolute';
 
         playerDiv.style.left = playerScreenX + "px";

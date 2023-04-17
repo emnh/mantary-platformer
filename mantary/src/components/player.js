@@ -8,15 +8,19 @@ export function Player(f) {
         getDefaultKeyBindings,
         handleKeyBindings,
         getWorldBoundingBox,
+        getStartingPosition,
+        getPlayerSize,
+        getGravity
     } = f;
 
     let state = {
         gameSpeedInMSPerTick: 10,
         moveSpeed: 0.4,
-        movementVector: { x: 0, y: 0, },
-        worldPosition: { x: 0, y: 0, },
-        size: { width: 50, height: 50, },
+        velocity: { x: 0, y: 0, },
+        worldPosition: getStartingPosition(),
+        size: getPlayerSize(),
         worldBoundingBox: getWorldBoundingBox(),
+        gravity: getGravity(),
     };
     let prevState = state;
 
@@ -39,19 +43,23 @@ export function Player(f) {
         if (y < y2) {
             worldPosition.y = y2;
         }
-        if (x > width) {
-            worldPosition.x = width;
+        if (x + state.size.width > width) {
+            worldPosition.x = width - state.size.width;
         }
-        if (y > height) {
-            worldPosition.y = height;
+        if (y + state.size.height > height) {
+            worldPosition.y = height - state.size.height;
         }
     }
 
     function update(elapsed) {
-        const { movementVector, moveSpeed, worldPosition } = state;
-        const { x, y } = movementVector;
+        const { velocity, moveSpeed, worldPosition } = state;
+        const { x, y } = velocity;
+        const { x: gx, y: gy } = state.gravity;
+        velocity.x += gx * elapsed;
+        velocity.y += gy * elapsed;
         worldPosition.x += x * moveSpeed * elapsed;
         worldPosition.y += y * moveSpeed * elapsed;
+
         checkBounds();
         // f.log("Player", worldPosition.x, worldPosition.y);
     }
@@ -141,23 +149,23 @@ export function Player(f) {
 
     // TODO: refactor
     function moveLeft(keyPressed) {
-        state.movementVector.x = keyPressed ? -1 : 0;
+        state.velocity.x = keyPressed ? -1 : 0;
         // state.movementVector.y = 0;
     }
 
     function moveRight(keyPressed) {
-        state.movementVector.x = keyPressed ? 1 : 0;
+        state.velocity.x = keyPressed ? 1 : 0;
         // state.movementVector.y = 0;
     }
 
     function moveUp(keyPressed) {
         // state.movementVector.x = 0;
-        state.movementVector.y = keyPressed ? -1 : 0;
+        state.velocity.y = keyPressed ? -1 : 0;
     }
 
     function moveDown(keyPressed) {
         // state.movementVector.x = 0;
-        state.movementVector.y = keyPressed ? 1 : 0;
+        state.velocity.y = keyPressed ? 1 : 0;
     }
 
     return { 

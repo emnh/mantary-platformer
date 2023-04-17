@@ -15,7 +15,10 @@ export function Audio(f, musicEnabled) {
     function start() {
         Howler.mobileAutoEnable = false;
         new Howl({
-            src: [ './audio/juhani_junkala_chiptune_adventures_1_stage_1.ogg'],
+            src: [
+                './audio/juhani_junkala_chiptune_adventures_1_stage_1.ogg',
+                './audio/juhani_junkala_chiptune_adventures_1_stage_1.mp3'
+            ],
             autoplay: musicEnabled,
             loop: true,
             volume: 0.25,

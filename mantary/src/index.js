@@ -6,11 +6,6 @@ import * as importedFunctions from './imports.js';
 function game(state) {
     console.log("Game started");
     importedFunctions.startComponents(state.components);
-    // const functions = importedFunctions.enumerateFunctions(importedFunctions);
-    // for (const func of functions) {
-    //     console.log(func.name);
-    // }
-    importedFunctions.drawDivs(state.components.docInterface);
 };
 
 function runTestSuite(state) {
@@ -30,7 +25,7 @@ function main(state) {
 }
 
 function getComponents() {
-    const deps = {
+    const system = importedFunctions.newComponentDecorator(() => ({
         log: (...args) => console.log(...args),
         performanceNow: () => performance.now(),
         requestAnimationFrame,
@@ -38,13 +33,15 @@ function getComponents() {
         clearTimeout,
         immutableMap: immutable.Map,
         ...importedFunctions
-    };
+    }))();
     
-    const docInterface = deps.DocInterface(document, setTimeout);
-    const player = deps.Player(importedFunctions.mergeComponents(deps, { components: { docInterface } }));
-    const draw = deps.Draw(docInterface, player);
+    const docInterface = system.DocInterface(document, setTimeout);
+    const playerDeps = importedFunctions.mergeComponents(system, { components: { docInterface } }, system);
+    const player = system.Player(playerDeps);
+    const draw = system.Draw(docInterface, player);
     
     return {
+        system,
         draw,
         player,
         docInterface,
@@ -53,5 +50,4 @@ function getComponents() {
 
 const state = {};
 state.components = getComponents();
-state.functions = importedFunctions.bindFunctions(state, importedFunctions)
 importedFunctions.docReady(() => main(state), state.components.docInterface);

@@ -1,3 +1,3 @@
-export function isComponentSystemFunctionName(name, { getComponentSystemFunctionNames, immutableMap }) {
-    return getComponentSystemFunctionNames({ immutableMap }).includes(name);
+export function isComponentSystemFunctionName(name, { getComponentSystemFunctionNames, newComponentDecorator }) {
+    return getComponentSystemFunctionNames({ newComponentDecorator }).includes(name);
 }

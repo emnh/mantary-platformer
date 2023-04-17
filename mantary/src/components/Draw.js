@@ -1,3 +1,7 @@
+import protagonistImgSrc from '../../images/protagonist.png';
+import protagonistWalkImgSrc from '../../images/walk.webp';
+import protagonistJumpImgSrc from '../../images/jump.gif';
+
 export function Draw(f) {
 
     const {
@@ -10,18 +14,24 @@ export function Draw(f) {
         unregisterRaf,
         getWorldX,
         getWorldY,
-        getWorldWidth,
-        getWorldHeight,
+        // getWorldWidth,
+        // getWorldHeight,
         getLevelViewBoundingBox,
         getPlayerWidth,
         getPlayerHeight,
+        getFacing,
+        isOnGround,
+        getVelocityX,
+        getVelocityY,
     } = f;
 
     const borderSize = 5;
     let playerDiv = null;
+    let playerImg = null;
     let boundary = null;
     let scale = 1;
     let canvas = null;
+    let lastState = null;
 
     // TODO: Refactor to make it a pure function.
     function drawGrid(canvas, width, height, gridSize) {
@@ -47,14 +57,7 @@ export function Draw(f) {
     }
 
     function setupDraw() {
-        const div = createElement("div");
-        div.id = "player";
-        div.style.position = "absolute";
-        div.style.width = "100px";
-        div.style.height = "100px";
-        div.style.backgroundColor = "green";
-        playerDiv = div;
-        bodyAppendChild(div);
+        initBodyStyle();
 
         boundary = createElement("div");
         boundary.style.border = borderSize + "px solid black";
@@ -64,7 +67,16 @@ export function Draw(f) {
         canvas = createElement("canvas");
         bodyAppendChild(canvas);
 
-        initBodyStyle();
+        const div = createElement("div");
+        div.id = "player";
+        div.style.position = "absolute";
+        playerDiv = div;
+        const img = createElement("img");
+        img.src = protagonistImgSrc;
+        img.style.width = "100%";
+        div.appendChild(img);
+        playerImg = img;
+        bodyAppendChild(div);
     }
 
     function updateDraw() {
@@ -81,6 +93,31 @@ export function Draw(f) {
         
         const playerWidth = getPlayerWidth() * scale;
         const playerHeight = getPlayerHeight() * scale;
+        playerDiv.style.width = playerWidth + "px";
+        playerDiv.style.height = playerHeight + "px";
+        if (getFacing() == "left") {
+            playerDiv.style.transform = "scaleX(-1)";
+        } else {
+            playerDiv.style.transform = "scaleX(1)";
+        }
+        if (isOnGround()) {
+            if (getVelocityX() != 0) {
+                if (lastState != "walk") {
+                    playerImg.src = protagonistWalkImgSrc;
+                    lastState = "walk";
+                }
+            } else {
+                if (lastState != "idle") {
+                    playerImg.src = protagonistImgSrc;
+                    lastState = "idle";
+                }
+            }
+        } else {
+            if (lastState != "jump") {
+                playerImg.src = protagonistJumpImgSrc;
+                lastState = "jump";
+            }
+        }
         
         const x = getWorldX() * scale;
         const y = getWorldY() * scale;

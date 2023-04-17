@@ -1,7 +1,13 @@
 export function Level() {
 
     function getPlayerSize() {
-        return { width: 50, height: 50 };
+        // Image is 396, 579
+        
+        const ratio = 396 / 579;
+        const height = 120;
+        const width = height * ratio;
+
+        return { width, height  };
     }
 
     function getStartingPosition() {
@@ -11,15 +17,15 @@ export function Level() {
     }
 
     function getLevelViewBoundingBox() {
-        return { x: 0, y: 0, width: 500, height: 800 };
+        return { x: 0, y: 0, width: 1000, height: 1000 };
     }
 
     function getWorldBoundingBox() {
-        return { x: 0, y: 0, width: 1000, height: 800 };
+        return { x: 0, y: 0, width: 10000, height: 1000 };
     }
 
     function getGravity() {
-        return { x: 0, y: 0.001 };
+        return { x: 0, y: 0.01 };
     }
 
     return {

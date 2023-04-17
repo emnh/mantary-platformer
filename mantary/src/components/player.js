@@ -14,13 +14,18 @@ export function Player(f) {
     } = f;
 
     let state = {
+        tickCount: 0,
         gameSpeedInMSPerTick: 10,
         moveSpeed: 0.4,
+        jumpSpeed: 0.008,
         velocity: { x: 0, y: 0, },
         worldPosition: getStartingPosition(),
         size: getPlayerSize(),
         worldBoundingBox: getWorldBoundingBox(),
         gravity: getGravity(),
+        isOnGround: false,
+        facing: 'right',
+        jumpStart: null
     };
     let prevState = state;
 
@@ -37,28 +42,48 @@ export function Player(f) {
         const { worldPosition, worldBoundingBox } = state;
         const { x, y } = worldPosition;
         const { x: x2, y: y2, width, height } = worldBoundingBox;
-        if (x < x2) {
+        if (x <= x2) {
             worldPosition.x = x2;
+            state.velocity.x = 0;
         }
-        if (y < y2) {
+        if (y <= y2) {
             worldPosition.y = y2;
+            state.velocity.y = 0;
         }
-        if (x + state.size.width > width) {
+        if (x + state.size.width >= width) {
             worldPosition.x = width - state.size.width;
+            state.velocity.x = 0;
         }
-        if (y + state.size.height > height) {
+        if (y + state.size.height >= height) {
             worldPosition.y = height - state.size.height;
+            if (!isJumping()) {
+                state.isOnGround = true;
+                state.velocity.y = 0;
+            }
+        } else {
+            state.isOnGround = false;
         }
+    }
+
+    function isJumping() {
+        return state.jumpStart !== null && state.tickCount - state.jumpStart < 20;
     }
 
     function update(elapsed) {
         const { velocity, moveSpeed, worldPosition } = state;
-        const { x, y } = velocity;
+        if (isJumping()) {
+            velocity.y -= state.jumpSpeed * elapsed;
+        } else {
+            state.jumpStart = null;
+        }
         const { x: gx, y: gy } = state.gravity;
         velocity.x += gx * elapsed;
-        velocity.y += gy * elapsed;
-        worldPosition.x += x * moveSpeed * elapsed;
-        worldPosition.y += y * moveSpeed * elapsed;
+        if (!state.isOnGround && !isJumping()) {
+            // console.log("Gravity");
+            velocity.y += gy * elapsed;
+        }
+        worldPosition.x += velocity.x * elapsed;
+        worldPosition.y += velocity.y * elapsed;
 
         checkBounds();
         // f.log("Player", worldPosition.x, worldPosition.y);
@@ -128,8 +153,10 @@ export function Player(f) {
             lastEngineTime = performanceNow();
             for (const engineName in engineCallbacks) {
                 const engineFunction = engineCallbacks[engineName];
+                // TODO: Add try catch here for robustness?
                 engineFunction(elapsed);
             }
+            state.tickCount += 1;
         };
         setTimeout(engineLoop, state.gameSpeedInMSPerTick);
     }
@@ -149,23 +176,28 @@ export function Player(f) {
 
     // TODO: refactor
     function moveLeft(keyPressed) {
-        state.velocity.x = keyPressed ? -1 : 0;
+        state.velocity.x = keyPressed ? -state.moveSpeed : 0;
+        state.facing = 'left';
         // state.movementVector.y = 0;
     }
 
     function moveRight(keyPressed) {
-        state.velocity.x = keyPressed ? 1 : 0;
+        state.velocity.x = keyPressed ? state.moveSpeed : 0;
+        state.facing = 'right';
         // state.movementVector.y = 0;
     }
 
     function moveUp(keyPressed) {
         // state.movementVector.x = 0;
-        state.velocity.y = keyPressed ? -1 : 0;
+        if (state.isOnGround && keyPressed) {
+            state.isOnGround = false;
+            state.jumpStart = state.tickCount;
+        }       
     }
 
     function moveDown(keyPressed) {
         // state.movementVector.x = 0;
-        state.velocity.y = keyPressed ? 1 : 0;
+        // state.velocity.y = keyPressed ? 1 : 0;
     }
 
     return { 
@@ -176,5 +208,9 @@ export function Player(f) {
         getWorldWidth: () => state.worldBoundingBox.width,
         getPlayerWidth: () => state.size.width,
         getPlayerHeight: () => state.size.height,
+        getFacing: () => state.facing,
+        isOnGround: () => state.isOnGround,
+        getVelocityX: () => state.velocity.x,
+        getVelocityY: () => state.velocity.y,
     };
 }

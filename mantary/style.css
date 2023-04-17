@@ -1,0 +1,16 @@
+body {
+    /* Chrome, Safari, Opera */
+    -webkit-user-select: none;
+
+    /* Firefox */
+    -moz-user-select: none;
+
+    /* IE 10+ */
+    -ms-user-select: none;
+
+    /* Standard syntax */
+    user-select: none;
+
+    background: linear-gradient(to bottom, #ffffff, #a0a0ff);
+    background-attachment: fixed;
+}

@@ -20,7 +20,7 @@ const longPlatformSrcs = [
     platformImg6Src,
 ];
 
-export function Draw(f) {
+export function Draw(f, fullscreenEnabled) {
 
     const {
         // getVelocityY,
@@ -137,6 +137,7 @@ export function Draw(f) {
         // span.style.position = "absolute";
         // span.style.float = "right";
         span.style.display = "inline-block";
+        span.style.fontColor = "white";
         
         coinStatusCountElement = span;
         // div.style.backgroundColor = "black";
@@ -284,7 +285,8 @@ export function Draw(f) {
     }
 
     function fullscreen() {
-        let firstFS = true;
+        let firstFS = fullscreenEnabled;
+
         const handler = function (event) {
             if ('fwasdWASD'.includes(event.key) ||
                 ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)
@@ -293,6 +295,9 @@ export function Draw(f) {
                     requestFullscreen();
                     firstFS = false;
                 }
+            }
+            if (event.key == 'f') {
+                requestFullscreen();
             }
         };
         const handler2 = function (event) {

@@ -35,6 +35,13 @@ function getComponents() {
         immutableMap: immutable.Map,
         ...importedFunctions
     }))();
+
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const musicEnabled = urlParams.has('music');
+    const fullscreenEnabled = urlParams.has('fullscreen');
+    console.log("Music enabled (Add /#music to URL): ", musicEnabled);
+    console.log("Fullscreen enabled (Add /#fullscreen to URL): ", fullscreenEnabled);
+    console.log("To enable go to: ", window.location.href.replace(location.hash,"") + "#music&fullscreen");
     
     const level = system.Level();
     const docInterface = system.DocInterface(window, document, setTimeout);
@@ -43,10 +50,8 @@ function getComponents() {
     const player = system.Player(playerDeps);
     const drawDeps =
         system.mergeComponents(system, { components: { docInterface, player, level } }, system);
-    const draw = system.Draw(drawDeps);
+    const draw = system.Draw(drawDeps, fullscreenEnabled);
     const audioDeps = system.mergeComponents(system, { components: { level } }, system);
-    const urlParams = new URLSearchParams(window.location.hash.substring(1));
-    const musicEnabled = urlParams.has('music');
     const audio = system.Audio(audioDeps, musicEnabled);
     
     return {

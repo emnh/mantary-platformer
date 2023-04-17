@@ -9,6 +9,6 @@ export function newComponentDecorator(componentFunction, { getComponentSystemFun
                 component[name] = () => {};
             }
         }
-        return component;
+        return Object.freeze(component);
     };
 }

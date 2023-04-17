@@ -1,3 +1,3 @@
-export function isComponentSystemFunctionName(name) {
-    return ["start", "stop", "serialize", "deserialize"].includes(name);
+export function isComponentSystemFunctionName(name, { getComponentSystemFunctionNames, immutableMap }) {
+    return getComponentSystemFunctionNames({ immutableMap }).includes(name);
 }

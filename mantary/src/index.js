@@ -1,5 +1,6 @@
 // import './style.css';
 
+import * as immutable from 'immutable';
 import * as importedFunctions from './imports.js';
 
 function game(state) {
@@ -29,27 +30,25 @@ function main(state) {
 }
 
 function getComponents() {
-    const consoleInterface = importedFunctions.ConsoleInterface(console);
     const deps = {
+        log: (...args) => console.log(...args),
         performanceNow: () => performance.now(),
         requestAnimationFrame,
         cancelAnimationFrame,
         clearTimeout,
-        log: consoleInterface.log,
+        immutableMap: immutable.Map,
         ...importedFunctions
     };
-    const docInterface = importedFunctions.DocInterface(document, setTimeout);
-    const player =
-        importedFunctions.Player(importedFunctions.mergeComponents(deps, { components: { docInterface } }));
-    const draw = importedFunctions.Draw(docInterface, player);
-    const immutableInterface = importedFunctions.ImmutableInterface();
+    
+    const docInterface = deps.DocInterface(document, setTimeout);
+    const player = deps.Player(importedFunctions.mergeComponents(deps, { components: { docInterface } }));
+    const draw = deps.Draw(docInterface, player);
+    
     return {
         draw,
         player,
         docInterface,
-        consoleInterface,
-        immutableInterface
-    }
+    };
 };
 
 const state = {};

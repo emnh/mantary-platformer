@@ -15,7 +15,7 @@ export function Player(f) {
         getGravity,
         getPlatforms,
         getCoins,
-        consumeCoin
+        consumeCoin,
     } = f;
 
     let state = {

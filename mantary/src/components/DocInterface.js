@@ -2,6 +2,7 @@ export function DocInterface(window, doc, setTimeout) {
 
     function start() {
         doc.innerHTML = '';
+        
     }
 
     function stop() {
@@ -22,6 +23,10 @@ export function DocInterface(window, doc, setTimeout) {
         doc.body.style.overflow = "hidden";
     }
 
+    function requestFullscreen() {
+        doc.body.requestFullscreen();
+    }
+
     return {
         start, stop, serialize, bodyAppendChild, initBodyStyle,
         addEventListener: (...args) => window.addEventListener(...args),
@@ -31,5 +36,6 @@ export function DocInterface(window, doc, setTimeout) {
         getDocumentReadyState: () => doc.readyState,
         getWindowInnerWidth: () => window.innerWidth,
         getWindowInnerHeight: () => window.innerHeight,
+        requestFullscreen,
     };
 }

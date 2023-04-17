@@ -46,6 +46,7 @@ export function Draw(f) {
         registerConsumeCoinCallback,
         registerRaf,
         unregisterRaf,
+        requestFullscreen,
     } = f;
 
     const borderSize = 5;
@@ -282,9 +283,25 @@ export function Draw(f) {
         });
     }
 
+    function fullscreen() {
+        let firstFS = true;
+
+        addEventListener('keydown', function (event) {
+            if ('fwasdWASD'.includes(event.key) ||
+                ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)
+                ) {
+                if (firstFS) {
+                    requestFullscreen();
+                    firstFS = false;
+                }
+            }
+        });
+    }
+
     function start() {
         setupDraw();
         registerRaf("updateDraw", updateDraw);
+        fullscreen();
     }
 
     function stop() {

@@ -20,6 +20,8 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     // Define variables for touch controls
     let touchStartX = null;
     let touchEndX = null;
+    let touchStartY = null;
+    let touchEndY = null;
 
     addEventListener('touchstart', handleTouchStart);
     addEventListener('touchmove', handleTouchMove);
@@ -29,11 +31,13 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     function handleTouchStart(event) {
         event.preventDefault();
         touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
     }
 
     function handleTouchMove(event) {
         event.preventDefault();
         touchEndX = event.touches[0].clientX;
+        touchEndY = event.touches[0].clientY;
 
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
@@ -59,6 +63,16 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             // Reset touch variables
             // touchStartX = null;
             // touchEndX = null;
+        }
+
+        const touchDiffY = touchEndY - touchStartY;
+        if (touchDiffY > 100) {
+            keysPressed["tap"] = true;
+            updateCallback(true);
+            setTimeout(() => {
+                delete keysPressed["tap"];
+                updateCallback(false);
+            }, 100);
         }
     }
 

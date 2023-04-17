@@ -69,7 +69,7 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
 
         if (touchStartY && touchEndY) {
             const touchDiffY = touchEndY - touchStartY;
-            if (touchDiffY < -50) {
+            if (touchDiffY < -100) {
                 keysPressed["tap"] = true;
                 updateCallback(true);
                 setTimeout(() => {
@@ -108,12 +108,16 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             touchEndX = null;
         } else {
             // Single tap (jump)
-            keysPressed["tap"] = true;
-            updateCallback(true);
-            setTimeout(() => {
-                delete keysPressed["tap"];
-                updateCallback(false);
-            }, 100);
+            // keysPressed["tap"] = true;
+            // updateCallback(true);
+            // setTimeout(() => {
+            //     delete keysPressed["tap"];
+            //     updateCallback(false);
+            // }, 100);
+        }
+        if (touchStartY && touchEndY) {
+            touchStartY = null;
+            touchEndY = null;
         }
     }
 

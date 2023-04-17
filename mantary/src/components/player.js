@@ -11,7 +11,7 @@ export function Player(f) {
 
     let state = {
         gameSpeedInMSPerTick: 10,
-        moveSpeed: 0.002,
+        moveSpeed: 0.4,
         movementVector: { x: 0, y: 0, },
         worldPosition: { x: 0, y: 0, },
         screenPosition: { x: 0, y: 0, },
@@ -55,16 +55,17 @@ export function Player(f) {
     function setupRAF() {
         // registerRaf("playerUpdate", update);
         const rafLoop = function() {
+            if (running) {
+                raf = requestAnimationFrame(rafLoop);
+            }
             if (lastRafTime === null) {
                 lastRafTime = performanceNow();
             }
             const elapsed = performanceNow() - lastRafTime;
+            lastRafTime = performanceNow();
             for (const rafName in rafCallbacks) {
                 const raf = rafCallbacks[rafName];
                 raf(elapsed);
-            }
-            if (running) {
-                raf = requestAnimationFrame(rafLoop);
             }
         };
         raf = requestAnimationFrame(rafLoop);
@@ -87,16 +88,17 @@ export function Player(f) {
     function setupEngine() {
         registerEngineUpdate("playerUpdate", update);
         const engineLoop = function(keyAddedOrRemoved) {
+            if (running) {
+                setTimeout(engineLoop, state.gameSpeedInMSPerTick);
+            }
             if (lastEngineTime === null) {
                 lastEngineTime = performanceNow();
             }
             const elapsed = performanceNow() - lastEngineTime;
+            lastEngineTime = performanceNow();
             for (const engineName in engineCallbacks) {
                 const engineFunction = engineCallbacks[engineName];
                 engineFunction(elapsed);
-            }
-            if (running) {
-                setTimeout(engineLoop, state.gameSpeedInMSPerTick);
             }
         };
         setTimeout(engineLoop, state.gameSpeedInMSPerTick);

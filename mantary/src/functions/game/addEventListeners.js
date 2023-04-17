@@ -1,6 +1,7 @@
 export function addEventListeners(keysPressed, updateCallback, { addEventListener }) {
     addEventListener('keydown', function (event) {
         keysPressed[event.key] = true;
+        // console.log("Key", event.key);
         updateCallback(true);
     });
 
@@ -33,6 +34,32 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     function handleTouchMove(event) {
         event.preventDefault();
         touchEndX = event.touches[0].clientX;
+
+        if (touchStartX && touchEndX) {
+            const touchDiffX = touchEndX - touchStartX;
+            if (touchDiffX > 0) {
+                // Swipe right
+                keysPressed["swipeRight"] = true;
+                updateCallback(true);
+
+                setTimeout(() => {
+                    delete keysPressed["swipeRight"];
+                    updateCallback(false);
+                }, 500);
+            } else if (touchDiffX < 0) {
+                // Swipe left
+                keysPressed["swipeLeft"] = true;
+                updateCallback(true);
+
+                setTimeout(() => {
+                    delete keysPressed["swipeLeft"];
+                    updateCallback(false);
+                }, 500);
+            }
+            // Reset touch variables
+            // touchStartX = null;
+            // touchEndX = null;
+        }
     }
 
     function handleTouchEnd(event) {

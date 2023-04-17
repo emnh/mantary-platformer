@@ -13,7 +13,8 @@ export function Audio(f, musicEnabled) {
     };
 
     function start() {
-        coinSound = new Howl({
+        Howler.mobileAutoEnable = true;
+        new Howl({
             src: [ './audio/juhani_junkala_chiptune_adventures_1_stage_1.ogg'],
             autoplay: musicEnabled,
             loop: true,

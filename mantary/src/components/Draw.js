@@ -23,28 +23,29 @@ const longPlatformSrcs = [
 export function Draw(f) {
 
     const {
-        createElement,
+        // getVelocityY,
+        // getWorldHeight,
+        // getWorldWidth,
         bodyAppendChild,
-        initBodyStyle,
-        getWindowInnerWidth,
+        createElement,
+        getCoinCount,
+        getCoins,
+        getFacing,
+        getLevelViewBoundingBox,
+        getPlatforms,
+        getPlayerHeight,
+        getPlayerWidth,
+        getVelocityX,
         getWindowInnerHeight,
-        registerRaf,
-        unregisterRaf,
+        getWindowInnerWidth,
         getWorldX,
         getWorldY,
-        // getWorldWidth,
-        // getWorldHeight,
-        getLevelViewBoundingBox,
-        getPlayerWidth,
-        getPlayerHeight,
-        getFacing,
+        initBodyStyle,
         isOnGround,
-        getVelocityX,
-        // getVelocityY,
-        getPlatforms,
-        getCoins,
+        performanceNow,
         registerConsumeCoinCallback,
-        performanceNow
+        registerRaf,
+        unregisterRaf,
     } = f;
 
     const borderSize = 5;
@@ -59,6 +60,7 @@ export function Draw(f) {
     let levelDiv = null;
     let coins = [];
     let coinDivs = [];
+    let coinStatusCountElement = null;
 
     // TODO: Refactor to make it a pure function.
     function drawGrid(canvas, width, height, gridSize) {
@@ -111,6 +113,28 @@ export function Draw(f) {
         });
     }
 
+    function drawCoinStatus() {
+        const width = getWindowInnerWidth();
+        const height = getWindowInnerHeight();
+        const div = createElement("div");
+        div.style.position = "fixed";
+        div.style.left = width - 200 + "px";
+        div.style.top = "200px";
+        div.style.width = "5%";
+        div.style.height = "5%";
+        const span = createElement("span");
+        div.appendChild(span);
+        coinStatusCountElement = span;
+        // div.style.backgroundColor = "black";
+        const img = createElement("img");
+        img.src = coinImgSrc;
+        img.style.width = "100%";
+        img.style.position = "absolute";
+        div.appendChild(img);
+
+        bodyAppendChild(div);
+    };
+
     function drawCoins() {
         updateScale();
         coins = getCoins();        
@@ -156,6 +180,7 @@ export function Draw(f) {
 
         drawPlatforms();
         drawCoins();
+        drawCoinStatus();
 
         const div = createElement("div");
         div.id = "player";
@@ -182,6 +207,8 @@ export function Draw(f) {
     }
 
     function updateDraw() {
+        coinStatusCountElement.innerHTML = getCoinCount();
+
         updateScale();
         
         const playerWidth = getPlayerWidth() * scale;

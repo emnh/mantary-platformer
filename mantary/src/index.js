@@ -39,17 +39,22 @@ function getComponents() {
     const level = system.Level();
     const docInterface = system.DocInterface(window, document, setTimeout);
     const playerDeps =
-        importedFunctions.mergeComponents(system, { components: { docInterface, level } }, system);
+        system.mergeComponents(system, { components: { docInterface, level } }, system);
     const player = system.Player(playerDeps);
     const drawDeps =
-        importedFunctions.mergeComponents(system, { components: { docInterface, player, level } }, system);
+        system.mergeComponents(system, { components: { docInterface, player, level } }, system);
     const draw = system.Draw(drawDeps);
+    const audioDeps = system.mergeComponents(system, { components: { level } }, system);
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const musicEnabled = urlParams.has('music');
+    const audio = system.Audio(audioDeps, musicEnabled);
     
     return {
         system,
         draw,
         player,
         docInterface,
+        audio,
     };
 };
 

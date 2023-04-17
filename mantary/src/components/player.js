@@ -202,7 +202,8 @@ export function Player(f) {
             if (lastEngineTime === null) {
                 lastEngineTime = performanceNow();
             }
-            const elapsed = performanceNow() - lastEngineTime;
+            // const elapsed = performanceNow() - lastEngineTime;
+            const elapsed = state.gameSpeedInMSPerTick;
             lastEngineTime = performanceNow();
             for (const engineName in engineCallbacks) {
                 const engineFunction = engineCallbacks[engineName];
@@ -265,5 +266,6 @@ export function Player(f) {
         isOnGround: () => state.isOnGround,
         getVelocityX: () => state.velocity.x,
         getVelocityY: () => state.velocity.y,
+        getCoinCount: () => state.coinCount,
     };
 }

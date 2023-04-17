@@ -35,9 +35,11 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
     }
 
     function handleTouchMove(event) {
-        event.preventDefault();
-        touchEndX = event.touches[0].clientX;
-        touchEndY = event.touches[0].clientY;
+        if (event !== undefined) {
+            event.preventDefault();
+            touchEndX = event.touches[0].clientX;
+            touchEndY = event.touches[0].clientY;
+        }
 
         if (touchStartX && touchEndX) {
             const touchDiffX = touchEndX - touchStartX;
@@ -65,14 +67,16 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             // touchEndX = null;
         }
 
-        const touchDiffY = touchEndY - touchStartY;
-        if (touchDiffY < -50) {
-            keysPressed["tap"] = true;
-            updateCallback(true);
-            setTimeout(() => {
-                delete keysPressed["tap"];
-                updateCallback(false);
-            }, 100);
+        if (touchStartY && touchEndY) {
+            const touchDiffY = touchEndY - touchStartY;
+            if (touchDiffY < -50) {
+                keysPressed["tap"] = true;
+                updateCallback(true);
+                setTimeout(() => {
+                    delete keysPressed["tap"];
+                    updateCallback(false);
+                }, 100);
+            }
         }
     }
 
@@ -112,4 +116,10 @@ export function addEventListeners(keysPressed, updateCallback, { addEventListene
             }, 100);
         }
     }
+
+    function handleTouchHold() {
+        handleTouchMove();
+    }
+
+    setInterval(handleTouchHold, 10);
 }

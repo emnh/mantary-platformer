@@ -7,6 +7,7 @@ export function Player(f) {
         addEventListeners,
         getDefaultKeyBindings,
         handleKeyBindings,
+        getWorldBoundingBox,
     } = f;
 
     let state = {
@@ -14,8 +15,10 @@ export function Player(f) {
         moveSpeed: 0.4,
         movementVector: { x: 0, y: 0, },
         worldPosition: { x: 0, y: 0, },
-        screenPosition: { x: 0, y: 0, },
+        size: { width: 50, height: 50, },
+        worldBoundingBox: getWorldBoundingBox(),
     };
+    let prevState = state;
 
     let raf = null;
     let rafCallbacks = {};
@@ -26,11 +29,30 @@ export function Player(f) {
     let keysPressed = {};
     let lastKeysPressed = {};
 
+    function checkBounds() {
+        const { worldPosition, worldBoundingBox } = state;
+        const { x, y } = worldPosition;
+        const { x: x2, y: y2, width, height } = worldBoundingBox;
+        if (x < x2) {
+            worldPosition.x = x2;
+        }
+        if (y < y2) {
+            worldPosition.y = y2;
+        }
+        if (x > width) {
+            worldPosition.x = width;
+        }
+        if (y > height) {
+            worldPosition.y = height;
+        }
+    }
+
     function update(elapsed) {
         const { movementVector, moveSpeed, worldPosition } = state;
         const { x, y } = movementVector;
         worldPosition.x += x * moveSpeed * elapsed;
         worldPosition.y += y * moveSpeed * elapsed;
+        checkBounds();
         // f.log("Player", worldPosition.x, worldPosition.y);
     }
 
@@ -138,13 +160,13 @@ export function Player(f) {
         state.movementVector.y = keyPressed ? 1 : 0;
     }
 
-    function getScreenX() {
-        return state.screenPosition.x + state.worldPosition.x;
-    }
-
-    function getScreenY() {
-        return state.screenPosition.y + state.worldPosition.y;
-    }
-
-    return { start, stop, registerRaf, moveLeft, moveRight, moveUp, moveDown, getScreenX, getScreenY };
+    return { 
+        start, stop, registerRaf, moveLeft, moveRight, moveUp, moveDown,
+        getWorldX: () => state.worldPosition.x,
+        getWorldY: () => state.worldPosition.y,
+        getWorldHeight: () => state.worldBoundingBox.height,
+        getWorldWidth: () => state.worldBoundingBox.width,
+        getPlayerWidth: () => state.size.width,
+        getPlayerHeight: () => state.size.height,
+    };
 }

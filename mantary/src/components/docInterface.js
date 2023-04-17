@@ -1,4 +1,4 @@
-export function DocInterface(doc, setTimeout) {
+export function DocInterface(window, doc, setTimeout) {
 
     function start() {
         doc.innerHTML = '';
@@ -16,12 +16,20 @@ export function DocInterface(doc, setTimeout) {
         doc.body.appendChild(element);
     }
 
+    function initBodyStyle() {
+        doc.body.style.margin = "0px";
+        doc.body.style.padding = "0px";
+        doc.body.style.overflow = "hidden";
+    }
+
     return {
-        start, stop, serialize, bodyAppendChild,
+        start, stop, serialize, bodyAppendChild, initBodyStyle,
         addEventListener: (...args) => doc.addEventListener(...args),
         createElement: (...args) => doc.createElement(...args),
         getElementById: (...args) => doc.getElementById(...args),
         setTimeout: (...args) => setTimeout(...args),
         getDocumentReadyState: () => doc.readyState,
+        getWindowInnerWidth: () => window.innerWidth,
+        getWindowInnerHeight: () => window.innerHeight,
     };
 }

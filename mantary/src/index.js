@@ -9,6 +9,7 @@ function game(state) {
 };
 
 function runTestSuite(state) {
+    delete state.components.draw;
     const tests = importedFunctions.enumerateTestFunctions(importedFunctions);
     importedFunctions.startComponents(state.components);
     const testContext = importedFunctions.TestContext;
@@ -35,10 +36,14 @@ function getComponents() {
         ...importedFunctions
     }))();
     
-    const docInterface = system.DocInterface(document, setTimeout);
-    const playerDeps = importedFunctions.mergeComponents(system, { components: { docInterface } }, system);
+    const level = system.Level();
+    const docInterface = system.DocInterface(window, document, setTimeout);
+    const playerDeps =
+        importedFunctions.mergeComponents(system, { components: { docInterface, level } }, system);
     const player = system.Player(playerDeps);
-    const draw = system.Draw(docInterface, player);
+    const drawDeps =
+        importedFunctions.mergeComponents(system, { components: { docInterface, player, level } }, system);
+    const draw = system.Draw(drawDeps);
     
     return {
         system,

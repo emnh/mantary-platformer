@@ -8,9 +8,9 @@ Mantary Platformer: A finite scroller
  - Refactor Player.js to be smaller by extracting pure functions
 
 # Game features TODO
- - Add bounding box
- - Add gravity
- - Add jumping
+ - Add bounding box (done)
+ - Add gravity (done)
+ - Add jumping (done)
  - Add coins
  - Add enemies
  - Add loot

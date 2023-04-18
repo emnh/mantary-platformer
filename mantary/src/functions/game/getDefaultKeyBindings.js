@@ -1,5 +1,5 @@
 export function getDefaultKeyBindings(f) {
-    const { moveLeft, moveRight, moveUp, moveDown, swipeLeft, swipeRight, tap } = f;
+    const { moveLeft, moveRight, moveUp, moveDown, swipeLeft, swipeRight, tap, shoot } = f;
     const keyBindings = {
         'a': moveLeft,
         'd': moveRight,
@@ -15,8 +15,8 @@ export function getDefaultKeyBindings(f) {
         'ArrowDown': moveDown,
         'swipeLeft': swipeLeft,
         'swipeRight': swipeRight,
-        'tap': tap
-
+        'tap': tap,
+        ' ': shoot,
     };
     return keyBindings;
 };

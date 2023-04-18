@@ -16,6 +16,8 @@ export function Player(f) {
         getPlatforms,
         getCoins,
         consumeCoin,
+        dynamicLevelUpdate,
+        shootFireball,
     } = f;
 
     let state = {
@@ -144,6 +146,7 @@ export function Player(f) {
         checkBounds();
         checkCollisions();
         checkCoinCollisions();
+        dynamicLevelUpdate();
         // f.log("Player", worldPosition.x, worldPosition.y);
     }
 
@@ -192,7 +195,8 @@ export function Player(f) {
             moveDown,
             swipeLeft,
             swipeRight,
-            tap
+            tap,
+            shoot
         });
         const inputHandler = function(keyPressedOrReleased) {
             handleKeyBindings(keyBindings, keysPressed, lastKeysPressed);
@@ -278,6 +282,13 @@ export function Player(f) {
     function moveDown(keyPressed) {
         // state.movementVector.x = 0;
         // state.velocity.y = keyPressed ? 1 : 0;
+    }
+
+    function shoot(keyPressed) {
+        if (keyPressed) {
+            const { x, y } = state.worldPosition;
+            shootFireball(x, y, state.facing, state.size.width, state.size.height);
+        }
     }
 
     return { 

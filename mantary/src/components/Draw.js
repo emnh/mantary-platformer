@@ -9,6 +9,7 @@ import platformImg4Src from '../../images/platform4.png';
 import platformImg5Src from '../../images/platform5.png';
 import platformImg6Src from '../../images/platform6.png';
 import coinImgSrc from '../../images/coin.png';
+import fireballImgSrc from '../../images/fireball.png';
 
 const smallPlatformSrcs = [
     platformImg2Src,
@@ -30,7 +31,9 @@ export function Draw(f, fullscreenEnabled) {
         createElement,
         getCoinCount,
         getCoins,
+        getElementById,
         getFacing,
+        getFireballs,
         getLevelViewBoundingBox,
         getPlatforms,
         getPlayerHeight,
@@ -45,8 +48,8 @@ export function Draw(f, fullscreenEnabled) {
         performanceNow,
         registerConsumeCoinCallback,
         registerRaf,
-        unregisterRaf,
         requestFullscreen,
+        unregisterRaf,
     } = f;
 
     const borderSize = 5;
@@ -62,6 +65,7 @@ export function Draw(f, fullscreenEnabled) {
     let coins = [];
     let coinDivs = [];
     let coinStatusCountElement = null;
+    let fireballDivs = [];
 
     // TODO: Refactor to make it a pure function.
     function drawGrid(canvas, width, height, gridSize) {
@@ -225,6 +229,41 @@ export function Draw(f, fullscreenEnabled) {
         scale = Math.min(innerWidth / screenWidth, innerHeight / screenHeight);
     }
 
+    function drawFireballs() {
+        const fireballs = getFireballs();
+        // console.log("Count of fireballs: " + fireballs.length + ".", fireballs);
+        const updatedIds = {};
+        fireballs.forEach((fireball) => {
+            const fireballId = "fireball" + fireball.id;
+            const fireballImgId = "fireballImg" + fireball.id;
+            updatedIds[fireballId] = true;
+            const previous = getElementById(fireballId);
+            const div = previous || createElement("div");
+            div.style.left = fireball.x + "px";
+            div.style.top = fireball.y + "px";
+            const rad = 20.0 * performanceNow() * 0.001;
+            div.style.transform = `rotate(${rad}rad)`;
+            if (!previous) {
+                div.id = fireballId;                
+                div.style.position = "absolute";
+                div.style.width = fireball.width + "px";
+                div.style.height = fireball.height + "px";
+                const img = getElementById(fireballImgId) || createElement("img");
+                img.src = fireballImgSrc;
+                img.style.width = "100%";
+                img.style.position = "absolute";
+                div.appendChild(img);
+                levelDiv.appendChild(div);
+                fireballDivs.push(div);
+            }
+        });
+        fireballDivs.forEach((div) => {
+            if (!updatedIds[div.id]) {
+                div.remove();
+            }
+        });
+    }
+
     function updateDraw() {
         coinStatusCountElement.innerHTML = getCoinCount();
 
@@ -282,6 +321,8 @@ export function Draw(f, fullscreenEnabled) {
             // img.style.left = (50 - width) + '%';
             // img.style.width = width + '%';
         });
+
+        drawFireballs();
     }
 
     function fullscreen() {

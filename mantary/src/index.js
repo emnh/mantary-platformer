@@ -78,15 +78,16 @@ function getComponents() {
         
     }
     
-    const level = system.Level();
+    const level = system.Level(system);
+    const fireballs = system.Fireballs(system);
     const docInterface = system.DocInterface(window, document, setTimeout);
     const playerDeps =
-        system.mergeComponents(system, { components: { docInterface, level } }, system);
+        system.mergeComponents(system, { components: { docInterface, level, fireballs } }, system);
     const player = system.Player(playerDeps);
     const drawDeps =
-        system.mergeComponents(system, { components: { docInterface, player, level } }, system);
+        system.mergeComponents(system, { components: { docInterface, player, level, fireballs } }, system);
     const draw = system.Draw(drawDeps, fullscreenEnabled);
-    const audioDeps = system.mergeComponents(system, { components: { level, player } }, system);
+    const audioDeps = system.mergeComponents(system, { components: { level, fireballs, player } }, system);
     const audio = system.Audio(audioDeps, musicEnabled);
     
     return {

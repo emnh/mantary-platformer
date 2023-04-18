@@ -4,7 +4,7 @@ export function Fireballs(f) {
         performanceNow,
     } = f;
 
-    const fireballMoveSpeed = 10;
+    const fireballMoveSpeed = 1;
     const fireballRange = 500;
     const width = 50;
     const height = 50;
@@ -61,11 +61,11 @@ export function Fireballs(f) {
         }
     }
 
-    function update(platforms) {
+    function update(elapsed, platforms) {
         for (let i = 0; i < fireballs.length; i++) {
             const fireball = fireballs[i];
-            fireball.x += fireball.vx;
-            fireball.y += fireball.vy;
+            fireball.x += fireball.vx * elapsed;
+            fireball.y += fireball.vy * elapsed;
         }
         collisionCheck(platforms);
     }

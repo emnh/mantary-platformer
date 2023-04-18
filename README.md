@@ -5,10 +5,15 @@ Mantary Platformer: A finite scroller
 
 A fireball can fire every 250ms let's say. Do we specify 250ms in terms of recharge game ticks * ms
 per tick or performance.now()? For determinism let's do the former.
+TODO: Fix fireball timing to comply witht this.
 
 Can we speed up the game? Changing the number of ms per tick shouldn't slow down the game.
 We should interpolate between frames using requestAnimationFrame. But there should be a way
 to slow time, for fun, and maybe we'll have an effect in the game that does that.
+
+There are bugs in the game currently. We do not interpolate between frames. Also collision detection
+doesn't consider the bounding box to be the encapsulation of the two bounding boxes in adjacent
+states. Also we need immutable data because we need to preserve two adjacent states to interpolate.
 
 # Entity: game object
 

@@ -4,7 +4,8 @@ export function Audio(f, musicEnabled) {
 
     const {
         registerConsumeCoinCallback,
-        registerJumpCallback
+        registerJumpCallback,
+        registerShootCallback,
     } = f;
 
     function start() {
@@ -25,8 +26,13 @@ export function Audio(f, musicEnabled) {
             src: [ './audio/jump3.wav'],
             volume: 0.25
         });
+        const fireballSound = new Howl({
+            src: [ './audio/fireball.wav'],
+            volume: 0.25
+        });
         registerConsumeCoinCallback(() => coinSound.play());
         registerJumpCallback(() => jumpSound.play());
+        registerShootCallback(() => fireballSound.play());
     }
 
     return { start };

@@ -45,6 +45,11 @@ export function Player(f) {
     let running = false;
     let keysPressed = {};
     let lastKeysPressed = {};
+    let jumpCallbacks = [];
+
+    function registerJumpCallback(fn) {
+        jumpCallbacks.push(fn);
+    }
 
     function checkBounds() {
         const { worldPosition, worldBoundingBox } = state;
@@ -264,6 +269,9 @@ export function Player(f) {
         if (state.isOnGround && keyPressed) {
             state.isOnGround = false;
             state.jumpStart = state.tickCount;
+            for (const jumpCallback in jumpCallbacks) {
+                jumpCallbacks[jumpCallback]();
+            }
         }       
     }
 
@@ -274,6 +282,7 @@ export function Player(f) {
 
     return { 
         start, stop, registerRaf, moveLeft, moveRight, moveUp, moveDown,
+        registerJumpCallback,
         getWorldX: () => state.worldPosition.x,
         getWorldY: () => state.worldPosition.y,
         getWorldHeight: () => state.worldBoundingBox.height,

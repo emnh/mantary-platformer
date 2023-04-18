@@ -42,8 +42,8 @@ function getComponents() {
     const fireworksEnabled = urlParams.has('shaderbg');
     console.log("Music enabled (Add /#music to URL): ", musicEnabled);
     console.log("Fullscreen enabled (Add /#fullscreen to URL): ", fullscreenEnabled);
-    console.log("Fireworks enabled (Add /#fireworks to URL): ", fireworksEnabled);
     console.log("To enable go to: ", window.location.href.replace(location.hash,"") + "#music&fullscreen");
+    console.log("Fireworks enabled (Add /#shaderbg=lscGRl to URL): ", fireworksEnabled);
 
     if (fireworksEnabled) {
         let shader = null;
@@ -86,7 +86,7 @@ function getComponents() {
     const drawDeps =
         system.mergeComponents(system, { components: { docInterface, player, level } }, system);
     const draw = system.Draw(drawDeps, fullscreenEnabled);
-    const audioDeps = system.mergeComponents(system, { components: { level } }, system);
+    const audioDeps = system.mergeComponents(system, { components: { level, player } }, system);
     const audio = system.Audio(audioDeps, musicEnabled);
     
     return {

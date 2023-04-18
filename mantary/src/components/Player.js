@@ -26,6 +26,7 @@ export function Player(f) {
         gameSpeedInMSPerTick: 10,
         moveSpeed: 0.4,
         jumpSpeed: 0.008,
+        jumpAccelerationTime: 200,
         velocity: { x: 0, y: 0, },
         worldPosition: getStartingPosition(),
         size: getPlayerSize(),
@@ -124,7 +125,7 @@ export function Player(f) {
     }
 
     function isJumping() {
-        return state.jumpStart !== null && state.tickCount - state.jumpStart < 20;
+        return state.jumpStart !== null && state.tickCount - state.jumpStart < (state.jumpAccelerationTime / state.gameSpeedInMSPerTick);
     }
 
     function update(elapsed) {
@@ -146,7 +147,7 @@ export function Player(f) {
         checkBounds();
         checkCollisions();
         checkCoinCollisions();
-        dynamicLevelUpdate();
+        dynamicLevelUpdate(elapsed, getPlatforms());
         // f.log("Player", worldPosition.x, worldPosition.y);
     }
 

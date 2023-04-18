@@ -1,6 +1,15 @@
 # mantary-platformer
 Mantary Platformer: A finite scroller
 
+# Time management
+
+A fireball can fire every 250ms let's say. Do we specify 250ms in terms of recharge game ticks * ms
+per tick or performance.now()? For determinism let's do the former.
+
+Can we speed up the game? Changing the number of ms per tick shouldn't slow down the game.
+We should interpolate between frames using requestAnimationFrame. But there should be a way
+to slow time, for fun, and maybe we'll have an effect in the game that does that.
+
 # Entity: game object
 
 An entity is a game object that has a position, a velocity, and a bounding box.

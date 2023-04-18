@@ -123,7 +123,6 @@ async function enumerateJSFilesHelper(directory) {
 }
 
 async function enumerateJSFiles(directory) {
-  console.clear();
   const { signatureList, importList, functionNameList} = await enumerateJSFilesHelper(directory);
   signatureList.sort();
   importList.sort();
@@ -170,6 +169,7 @@ async function enumerateJSFiles(directory) {
   log("export {");
   log(functionNameList.map(x => decorate(x.name, true)).join(',\n'));
   log("};");
+  console.clear();
   console.log(msgs.join('\n'));
   fs.writeFileSync('src/imports.js', msgs.join('\n'));
 }
@@ -185,12 +185,22 @@ function wrapInTryCatch(func) {
   }
 }
 
+function ignoredFiles(path) {
+  console.log("path:", path);
+  return (
+    path.includes('node_modules') || 
+    path.includes('dist') ||
+    path.includes('build') ||
+    path.includes('imports.js')
+  );
+}
+
 // define the function to watch the directory for file changes
 function watchDirectory(directory) {
   const watcher = chokidar.watch(directory, { ignoreInitial: true });
 
   watcher.on('add', file => {
-    if (path.extname(file) === '.js') {
+    if (path.extname(file) === '.js' && !ignoredFiles(file)) {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) {
           console.error(err);
@@ -206,7 +216,7 @@ function watchDirectory(directory) {
   });
 
   watcher.on('change', file => {
-    if (path.extname(file) === '.js') {
+    if (path.extname(file) === '.js' && !ignoredFiles(file)) {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) {
           console.error(err);

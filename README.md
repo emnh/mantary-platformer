@@ -6,16 +6,18 @@ Mantary Platformer: A finite scroller
  - JavaScript for ease of development (my intuitive choice).
 
 Should I switch to:
- - JavaScript / mori for those immutable data structures. Familiarty of JS is hard to beat and I have the signature script already, although that is easy to reproduce for ClojureScript using ChatGPT.
+ - JavaScript / mori for those immutable data structures. Familiarity of JS is hard to beat and I have the signature script already, although that is easy to reproduce for ClojureScript using ChatGPT.
  - ClojureScript for functional gains. Higher cognitive load, harder to write code, but could rely more on ChatGPT.
  - C++/WASM for performance
- - C++/Unreal Engine is off the able for platformer because we don't need its complexity
+ - C++/Unreal Engine is off the table for platformer because we don't need its complexity
  - Unity because all my bought assets are there. Granted I'm not using them for this open source platformer.
  - TypeScript for type safety? It's cumbersome to write and I suspect more could be gained from ClojureScript.
 
 Is the performance of ClojureScript good enough? But it requires a full rewrite of the game. Use ChatGPT.
 Probably I think so, for a platformer it shouldn't be a problem.
 It doesn't have much in the way of performance requirements as long as the algorithm complexities are okay.
+
+But there is a problem with ClojureScript, it's not compatible with Vite I think.
 
 # Time management
 

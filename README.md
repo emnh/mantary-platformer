@@ -18,6 +18,12 @@ Probably I think so, for a platformer it shouldn't be a problem.
 It doesn't have much in the way of performance requirements as long as the algorithm complexities are okay.
 
 But there is a problem with ClojureScript, it's not compatible with Vite I think.
+Okay so ClojureScript has its own tooling, leiningen and fighweel.
+I tried it but it requires a huge bloat of dependencies and the hot reload doesn't work on WSL 2.
+I think I'll stick with JavaScript for now, or maybe PureScript.
+
+Ahh ok I initialized a PureScript project and it lacks a hot reload story by default.
+Maybe I'm too lazy to learn PureScript also. I'll stick with JavaScript for now.
 
 # Time management
 

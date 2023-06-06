@@ -10,7 +10,7 @@
     "signature": "nodemon ./scripts/signature.cjs"
   },
   "devDependencies": {
-    "vite": "^4.2.0"
+    "vite": "^4.2.3"
   },
   "dependencies": {
     "acorn": "^8.8.2",
